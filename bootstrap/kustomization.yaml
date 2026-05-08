@@ -3,9 +3,3 @@ kind: Kustomization
 
 resources:
   - namespaces.yaml
-  - ../infrastructure/kafka/kustomization.yaml
-  - ../infrastructure/redis/kustomization.yaml
-  - ../infrastructure/mailpit/kustomization.yaml
-  - ../apps/inquiry-backend/k8s/kustomization.yaml
-  - ../apps/profile-service/k8s/kustomization.yaml
-  - ../apps/mailer-service/k8s/base/kustomization.yaml
