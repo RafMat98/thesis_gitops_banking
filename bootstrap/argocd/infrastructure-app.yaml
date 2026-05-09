@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: "https://github.com/RafMat98/thesis_gitops_banking.git" # Το repo σου
     targetRevision: development
-    path: infrastructure # Ο φάκελος που μόλις φτιάξαμε!
+    path: infrastructure/kafka
   destination:
     server: "https://kubernetes.default.svc"
     namespace: infra-system
