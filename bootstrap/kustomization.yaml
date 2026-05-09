@@ -3,3 +3,4 @@ kind: Kustomization
 #Fixing #2
 resources:
   - namespaces.yaml
+  - argocd/
