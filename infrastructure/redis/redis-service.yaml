@@ -19,7 +19,7 @@ spec:
   type: NodePort
   ports:
     - port: 80
-      targetPort: 8001
+      targetPort: 5540
       nodePort: 30079
   selector:
     app: redis-insight
