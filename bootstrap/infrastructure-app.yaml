@@ -1,14 +1,14 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: strimzi-operator
+  name: kafka-cluster
   namespace: argocd
 spec:
   project: default
   source:
-    repoURL: "quay.io/strimzi-helm"
-    targetRevision: 1.0.0 # latest stable release
-    chart: strimzi-kafka-operator
+    repoURL: "https://github.com/RafMat98/thesis_gitops_banking.git" # Το repo σου
+    targetRevision: development
+    path: infrastructure # Ο φάκελος που μόλις φτιάξαμε!
   destination:
     server: "https://kubernetes.default.svc"
     namespace: infra-system
@@ -16,6 +16,3 @@ spec:
     automated:
       prune: true
       selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
-      - ServerSideApply=true
