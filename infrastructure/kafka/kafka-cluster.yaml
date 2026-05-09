@@ -4,7 +4,7 @@ metadata:
   name: main-cluster
   namespace: infra-system
   annotations:
-    strimzi.io/use-connector-resources: "true" # Enable Connector resources
+    strimzi.io/node-pools: enabled # Enable Connector resources
 spec:
   kafka:
     version: 4.2.0
