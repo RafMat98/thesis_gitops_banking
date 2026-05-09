@@ -1,0 +1,32 @@
+apiVersion: kafka.strimzi.io/v1
+kind: KafkaTopic
+metadata:
+  name: balance-requests
+  namespace: infra-system
+  labels:
+    strimzi.io/cluster: main-cluster
+spec:
+  partitions: 3
+  replicas: 3
+---
+apiVersion: kafka.strimzi.io/v1
+kind: KafkaTopic
+metadata:
+  name: balance-responses
+  namespace: infra-system
+  labels:
+    strimzi.io/cluster: main-cluster
+spec:
+  partitions: 3
+  replicas: 3
+---
+apiVersion: kafka.strimzi.io/v1
+kind: KafkaTopic
+metadata:
+  name: email-notifications
+  namespace: infra-system
+  labels:
+    strimzi.io/cluster: main-cluster
+spec:
+  partitions: 3
+  replicas: 3
