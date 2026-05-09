@@ -39,7 +39,7 @@ spec:
         - name: redis-insight
           image: redis/redisinsight:latest
           ports:
-            - containerPort: 8001
+            - containerPort: 5540
           resources:
             limits:
               memory: "256Mi"
