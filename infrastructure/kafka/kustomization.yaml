@@ -3,3 +3,5 @@ kind: Kustomization
 
 resources:
   - strimzi-operator.yaml
+  - kafka-nodepool.yaml
+  - kafka-cluster.yaml
