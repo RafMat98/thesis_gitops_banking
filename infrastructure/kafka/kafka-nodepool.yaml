@@ -1,0 +1,32 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaNodePool
+
+metadata:
+  name: dual-role-nodes
+  namespace: infra-system
+  labels:
+    strimzi.io/cluster: main-cluster
+
+spec:
+  replicas: 3
+
+  roles:
+    - broker
+    - controller
+
+  storage:
+    type: jbod
+    volumes:
+      - id: 0
+        type: persistent-claim
+        size: 10Gi
+        deleteClaim: false
+
+  resources:
+    requests:
+      memory: 1Gi
+      cpu: 500m
+
+    limits:
+      memory: 2Gi
+      cpu: 1000m
