@@ -5,3 +5,5 @@ resources:
   - infrastructure-app.yaml
   - redis-app.yaml
   - mailpit-app.yaml
+  - keda-app.yaml
+  - reflector-app.yaml
