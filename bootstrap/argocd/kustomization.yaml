@@ -3,3 +3,5 @@ kind: Kustomization
 #Fixing #2
 resources:
   - infrastructure-app.yaml
+  - redis-app.yaml
+  - mailpit-app.yaml
