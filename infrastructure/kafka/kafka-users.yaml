@@ -1,0 +1,28 @@
+apiVersion: kafka.strimzi.io/v1
+kind: KafkaUser
+metadata:
+  name: python-microservice-user
+  namespace: infra-system
+  labels:
+    strimzi.io/cluster: main-cluster
+spec:
+  authentication:
+    type: tls # mTLS Authentication
+  authorization:
+    type: simple
+    acls:
+      - resource:
+          type: topic
+          name: "*" # Can read/write to all topics, adjust as needed for more restrictive access
+          patternType: literal
+        operation: Read
+      - resource:
+          type: topic
+          name: "*"
+          patternType: literal
+        operation: Write
+      - resource:
+          type: group
+          name: "*"
+          patternType: literal
+        operation: Read
