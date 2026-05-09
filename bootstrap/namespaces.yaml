@@ -1,21 +1,28 @@
+# 1. Edge Routing / Gatekeeper
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ingress-nginx
+---
+# 2. GitOps Control Plane
 apiVersion: v1
 kind: Namespace
 metadata:
   name: argocd
 ---
-# Infrastructure Services (Kafka, Redis, Mailpit)
+# 3. Infrastructure & Stateful Services (Kafka, Redis)
 apiVersion: v1
 kind: Namespace
 metadata:
   name: infra-system
 ---
-# Monitoring Services (Prometheus/Grafana)
+# 4. Observability Stack
 apiVersion: v1
 kind: Namespace
 metadata:
   name: monitoring-system
 ---
-# Banking Applications (Python Apps)
+# 5. Business Logic & Microservices
 apiVersion: v1
 kind: Namespace
 metadata:
