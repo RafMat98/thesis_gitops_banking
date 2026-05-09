@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: redis-service
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: "https://github.com/RafMat98/thesis_gitops_banking.git"
+    targetRevision: development
+    path: infrastructure/redis
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: infra-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

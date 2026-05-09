@@ -6,12 +6,23 @@ metadata:
 spec:
   type: NodePort
   ports:
-    - name: smtp
-      port: 1025
-      targetPort: 1025
     - name: webui
       port: 8025
       targetPort: 8025
       nodePort: 30025 # Web UI Port exposed on the host for external access
+  selector:
+    app: mailpit
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mailpit
+  namespace: infra-system
+spec:
+  type: ClusterIP
+  ports:
+    - name: smtp
+      port: 1025
+      targetPort: 1025
   selector:
     app: mailpit
