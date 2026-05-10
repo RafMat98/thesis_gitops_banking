@@ -35,3 +35,39 @@ spec:
           - Read
           - Write
           - Describe
+---
+apiVersion: kafka.strimzi.io/v1
+kind: KafkaUser
+metadata:
+  name: cobol-backend-user
+  namespace: infra-system
+  labels:
+    strimzi.io/cluster: main-cluster
+spec:
+  authentication:
+    type: tls
+  authorization:
+    type: simple
+    acls:
+      - resource:
+          type: topic
+          name: "balance-requests"
+          patternType: literal
+        operations:
+          - Read
+          - Describe
+      - resource:
+          type: topic
+          name: "balance-responses"
+          patternType: literal
+        operations:
+          - Write
+          - Describe
+      - resource:
+          type: group
+          name: "cobol-backend-group"
+          patternType: literal
+        operations:
+          - Read
+          - Write
+          - Describe
