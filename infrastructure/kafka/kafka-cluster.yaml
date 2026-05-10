@@ -29,7 +29,7 @@ spec:
       - name: external
         port: 9094
         type: nodeport
-        tls: false
+        tls: true
         configuration:
           brokers:
             - broker: 0
