@@ -7,7 +7,7 @@ metadata:
     strimzi.io/cluster: main-cluster
 spec:
   authentication:
-    type: tls # mTLS Authentication
+    type: tls
   authorization:
     type: simple
     acls:
@@ -17,12 +17,14 @@ spec:
           patternType: literal
         operations:
           - Read
+          - Write
           - Describe
       - resource:
           type: topic
           name: "balance-responses"
           patternType: literal
         operations:
+          - Read
           - Write
           - Describe
       - resource:
@@ -31,3 +33,5 @@ spec:
           patternType: literal
         operations:
           - Read
+          - Write
+          - Describe
