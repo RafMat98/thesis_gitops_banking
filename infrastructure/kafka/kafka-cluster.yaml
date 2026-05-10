@@ -11,6 +11,8 @@ spec:
     metadataVersion: "4.2-IV0"
     authorization:
       type: simple
+      superUsers:
+        - User:ANONYMOUS
 
     listeners:
       - name: plain
