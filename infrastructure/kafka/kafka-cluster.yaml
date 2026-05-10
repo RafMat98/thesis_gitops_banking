@@ -33,11 +33,11 @@ spec:
         configuration:
           brokers:
             - broker: 0
-              advertisedHost: 192.168.0.102 # IP του talos-68b-si3
+              advertisedHost: 192.168.0.103 # IP του talos-68b-si3
             - broker: 1
-              advertisedHost: 192.168.0.XXX # IP του talos-4zb-66h
+              advertisedHost: 192.168.0.105 # IP του talos-4zb-66h
             - broker: 2
-              advertisedHost: 192.168.0.XXX # IP του talos-4zb-66h
+              advertisedHost: 192.168.0.105 # IP του talos-4zb-66h
 
     config:
       offsets.topic.replication.factor: 3
