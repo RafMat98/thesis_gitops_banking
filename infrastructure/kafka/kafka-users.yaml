@@ -13,21 +13,21 @@ spec:
     acls:
       - resource:
           type: topic
-          name: "*"
+          name: "balance-requests"
           patternType: literal
         operations:
           - Read
           - Describe
       - resource:
           type: topic
-          name: "*"
+          name: "balance-responses"
           patternType: literal
         operations:
           - Write
           - Describe
       - resource:
           type: group
-          name: "*"
+          name: "cobol-backend-group"
           patternType: literal
         operations:
           - Read
