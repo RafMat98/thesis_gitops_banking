@@ -14,7 +14,7 @@ USER spring
 
 # Αντιγραφή του τελικού jar από το Stage 1
 COPY --from=build /app/target/*.jar app.jar
-COPY --from=build /app/certs /app/certs
+# COPY --from=build /app/certs /app/certs #Only if you have certs to copy in local testing, otherwise the volume mount in k8s will handle it
 
 EXPOSE 8080
 
