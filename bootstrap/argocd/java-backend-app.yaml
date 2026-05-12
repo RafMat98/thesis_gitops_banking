@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: inquiry-backend
+  namespace: banking-apps
+spec:
+  project: default
+  source:
+    repoURL: "https://github.com/RafMat98/thesis_gitops_banking.git"
+    targetRevision: development
+    path: apps/inquiry-backend/k8s
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: infra-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

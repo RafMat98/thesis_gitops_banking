@@ -7,3 +7,4 @@ resources:
   - mailpit-app.yaml
   - keda-app.yaml
   - reflector-app.yaml
+  - java-backend-app.yaml
