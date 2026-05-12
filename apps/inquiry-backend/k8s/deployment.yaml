@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: inquiry-backend
-          image: rmat98/java_backend:latest
+          image: rmat98/java_backend:v1
           ports:
             - containerPort: 8080
           env:
