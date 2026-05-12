@@ -3,4 +3,4 @@ task_*.yaml
 tasks/
 certs/
 apps/inquiry-backend/src/main/resources/certs/
-*-dev.yaml
+application-dev.yaml
