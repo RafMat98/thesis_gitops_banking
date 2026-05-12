@@ -26,8 +26,8 @@ spec:
             - name: KAFKA_TRUSTSTORE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: java-microservice-user
-                  key: user.password
+                  name: main-cluster-cluster-ca-cert
+                  key: ca.password
             - name: KAFKA_KEYSTORE_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -47,10 +47,15 @@ spec:
               readOnly: true
       volumes:
         - name: kafka-certs
-          secret:
-            secretName: java-microservice-user
-            items:
-              - key: ca.p12
-                path: ca.p12
-              - key: user.p12
-                path: user.p12
+          projected:
+            sources:
+              - secret:
+                  name: main-cluster-cluster-ca-cert
+                  items:
+                    - key: ca.p12
+                      path: ca.p12
+              - secret:
+                  name: java-microservice-user
+                  items:
+                    - key: user.p12
+                      path: user.p12
