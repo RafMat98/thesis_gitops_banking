@@ -1,0 +1,18 @@
+server:
+  port: 8080
+camel:
+  component:
+    kafka:
+      # Using internal Kafka bootstrap address for in-cluster communication
+      brokers: ${KAFKA_BROKERS:main-cluster-kafka-bootstrap.infra-system.svc:9093}
+      security-protocol: SSL
+      # ssl-endpoint-algorithm: "" # Maybe needed for some Java versions, but can be left out if not required
+      # Paths where Kubernetes will mount the Secrets
+
+      ssl-truststore-location: file:/app/certs/ca.p12
+      ssl-truststore-type: PKCS12
+      ssl-truststore-password: ${KAFKA_TRUSTSTORE_PASSWORD}
+
+      ssl-keystore-location: file:/app/certs/user.p12
+      ssl-keystore-type: PKCS12
+      ssl-keystore-password: ${KAFKA_KEYSTORE_PASSWORD}

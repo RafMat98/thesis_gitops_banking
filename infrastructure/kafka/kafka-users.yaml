@@ -1,44 +1,6 @@
 apiVersion: kafka.strimzi.io/v1
 kind: KafkaUser
 metadata:
-  name: python-microservice-user
-  namespace: infra-system
-  labels:
-    strimzi.io/cluster: main-cluster
-spec:
-  authentication:
-    type: tls
-  authorization:
-    type: simple
-    acls:
-      - resource:
-          type: topic
-          name: "balance-requests"
-          patternType: literal
-        operations:
-          - Read
-          - Write
-          - Describe
-      - resource:
-          type: topic
-          name: "balance-responses"
-          patternType: literal
-        operations:
-          - Read
-          - Write
-          - Describe
-      - resource:
-          type: group
-          name: "cobol-backend-group"
-          patternType: literal
-        operations:
-          - Read
-          - Write
-          - Describe
----
-apiVersion: kafka.strimzi.io/v1
-kind: KafkaUser
-metadata:
   name: cobol-backend-user
   namespace: infra-system
   labels:
@@ -71,3 +33,83 @@ spec:
           - Read
           - Write
           - Describe
+---
+apiVersion: kafka.strimzi.io/v1
+kind: KafkaUser
+metadata:
+  name: java-microservice-user
+  namespace: infra-system
+  labels:
+    strimzi.io/cluster: main-cluster
+spec:
+  authentication:
+    type: tls
+  authorization:
+    type: simple
+    acls:
+      - resource:
+          type: topic
+          name: "balance-requests"
+          patternType: literal
+        operations:
+          - Write
+          - Describe
+      - resource:
+          type: group
+          name: "java-microservice-group"
+          patternType: literal
+        operations:
+          - Read
+          - Write
+          - Describe
+  template:
+    secret:
+      metadata:
+        annotations:
+          reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
+          reflector.v1.k8s.emberstack.com/reflection-auto-enabled: "true"
+          reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces: "app-system"
+---
+apiVersion: kafka.strimzi.io/v1
+kind: KafkaUser
+metadata:
+  name: python-microservice-user
+  namespace: infra-system
+  labels:
+    strimzi.io/cluster: main-cluster
+spec:
+  authentication:
+    type: tls
+  authorization:
+    type: simple
+    acls:
+      - resource:
+          type: topic
+          name: "balance-responses"
+          patternType: literal
+        operations:
+          - Read
+          - Describe
+      - resource:
+          type: topic
+          name: "email-notifications"
+          patternType: literal
+        operations:
+          - Read
+          - Write
+          - Describe
+      - resource:
+          type: group
+          name: "python-microservice-group"
+          patternType: literal
+        operations:
+          - Read
+          - Write
+          - Describe
+  template:
+    secret:
+      metadata:
+        annotations:
+          reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
+          reflector.v1.k8s.emberstack.com/reflection-auto-enabled: "true"
+          reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces: "app-system"

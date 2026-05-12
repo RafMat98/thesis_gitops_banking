@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inquiry-backend
+  namespace: banking-apps # Το namespace της εφαρμογής σου
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: inquiry-backend
+  template:
+    metadata:
+      labels:
+        app: inquiry-backend
+    spec:
+      containers:
+        - name: inquiry-backend
+          image: rmat98/java_backend:latest
+          ports:
+            - containerPort: 8080
+          env:
+            # Passing passwords from Strimzi/Reflector
+            - name: JAVA_TOOL_OPTIONS
+              value: "-XX:MaxRAMPercentage=75.0 -XX:InitialRAMPercentage=50.0"
+
+            - name: KAFKA_TRUSTSTORE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: java-microservice-user
+                  key: user.password
+            - name: KAFKA_KEYSTORE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: java-microservice-user
+                  key: user.password
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"
+
+          volumeMounts:
+            - name: kafka-certs
+              mountPath: /app/certs
+              readOnly: true
+      volumes:
+        - name: kafka-certs
+          secret:
+            secretName: java-microservice-user
+            items:
+              - key: ca.p12
+                path: ca.p12
+              - key: user.p12
+                path: user.p12
