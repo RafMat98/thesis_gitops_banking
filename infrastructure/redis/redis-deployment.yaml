@@ -41,9 +41,19 @@ spec:
           ports:
             - containerPort: 5540
           env:
+            - name: RI_APP_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: redis-insight-auth
+                  key: username
+            - name: RI_APP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: redis-insight-auth
+                  key: password
             - name: RI_REDIS_HOST
               value: "redis"
-            - name: REDIS_PORT
+            - name: RI_REDIS_PORT
               value: "6379"
           resources:
             limits:
