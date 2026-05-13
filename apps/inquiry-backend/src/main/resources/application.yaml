@@ -12,7 +12,7 @@ camel:
       ssl-truststore-location: /app/certs/ca.p12
       ssl-truststore-type: PKCS12
       ssl-truststore-password: ${KAFKA_TRUSTSTORE_PASSWORD}
-
+      # Paths where Kubernetes will mount the Secrets
       ssl-keystore-location: /app/certs/user.p12
       ssl-keystore-type: PKCS12
       ssl-keystore-password: ${KAFKA_KEYSTORE_PASSWORD}
