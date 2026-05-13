@@ -73,7 +73,7 @@ spec:
 apiVersion: kafka.strimzi.io/v1
 kind: KafkaUser
 metadata:
-  name: python-microservice-user
+  name: go-microservice-user
   namespace: infra-system
   labels:
     strimzi.io/cluster: main-cluster
