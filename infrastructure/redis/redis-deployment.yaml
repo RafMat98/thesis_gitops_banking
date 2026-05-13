@@ -40,6 +40,12 @@ spec:
           image: redis/redisinsight:latest
           ports:
             - containerPort: 5540
+          env:
+            - name: REDIS_URI
+              value: "redis"
+
+            - name: REDIS_PORT
+              value: "6379"
           resources:
             limits:
               memory: "256Mi"
