@@ -37,7 +37,7 @@ spec:
     spec:
       containers:
         - name: redis-insight
-          image: redis/redisinsight:latest
+          image: redis/redisinsight:1.14.0
           ports:
             - containerPort: 5540
           env:
