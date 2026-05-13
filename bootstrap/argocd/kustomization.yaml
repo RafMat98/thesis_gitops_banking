@@ -8,3 +8,4 @@ resources:
   - keda-app.yaml
   - reflector-app.yaml
   - java-backend-app.yaml
+  - scripts.yaml
