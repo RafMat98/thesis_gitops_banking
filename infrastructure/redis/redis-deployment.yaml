@@ -19,6 +19,13 @@ spec:
           ports:
             - containerPort: 6379
           command: ["redis-server", "--requirepass", "$(REDIS_PASSWORD)"]
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "192Mi" # ← λίγο πάνω από maxmemory
+              cpu: "300m"
           env:
             - name: REDIS_PASSWORD
               valueFrom:
