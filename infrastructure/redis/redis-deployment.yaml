@@ -41,9 +41,8 @@ spec:
           ports:
             - containerPort: 5540
           env:
-            - name: REDIS_URI
+            - name: RI_REDIS_HOST
               value: "redis"
-
             - name: REDIS_PORT
               value: "6379"
           resources:
