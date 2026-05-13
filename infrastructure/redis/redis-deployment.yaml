@@ -37,10 +37,12 @@ spec:
     spec:
       containers:
         - name: redis-insight
-          image: redis/redisinsight:1.14.0
+          image: redis/redisinsight:latest
           ports:
             - containerPort: 5540
           env:
+            - name: RI_AUTHENTICATION_ENABLED
+              value: "true"
             - name: RI_APP_USERNAME
               valueFrom:
                 secretKeyRef:
