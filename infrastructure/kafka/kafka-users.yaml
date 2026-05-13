@@ -73,7 +73,7 @@ spec:
 apiVersion: kafka.strimzi.io/v1
 kind: KafkaUser
 metadata:
-  name: python-microservice-user
+  name: go-microservice-user
   namespace: infra-system
   labels:
     strimzi.io/cluster: main-cluster
@@ -92,15 +92,14 @@ spec:
           - Describe
       - resource:
           type: topic
-          name: "email-notifications"
+          name: "profile-updates"
           patternType: literal
         operations:
-          - Read
           - Write
           - Describe
       - resource:
           type: group
-          name: "python-microservice-group"
+          name: " go-microservice-group"
           patternType: literal
         operations:
           - Read
