@@ -3,3 +3,4 @@ kind: Kustomization
 
 resources:
   - inquiry-backend/k8s/
+  - profile-service/k8s/
