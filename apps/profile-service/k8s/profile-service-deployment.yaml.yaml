@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-profile-service
+  namespace: banking-apps
+  labels:
+    app: profile-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: profile-service
+  template:
+    metadata:
+      labels:
+        app: profile-service
+    spec:
+      containers:
+        - name: profile-service
+          image: rmat98/go-profile-service:v1.0.0
+          imagePullPolicy: Always
+          env:
+            - name: REDIS_ADDR
+              value: "redis-service.infra-system.svc.cluster.local:6379"
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: redis-secrets
+                  key: password
+            - name: KAFKA_BROKERS
+              value: "main-cluster-kafka-bootstrap.infra-system.svc.cluster.local:9093"
+
+          # --- Adding resource requests and limits for better scheduling and stability ---
+          resources:
+            requests:
+              cpu: "50m" # 1/20 of a CPU core (for normal operation)
+              memory: "64Mi" # 64 MB RAM
+            limits:
+              cpu: "200m" # 1/5 of a CPU core (for spikes when reading many messages)
+              memory: "128Mi" # 128 MB RAM (Hard limit, if it exceeds this it will be killed)
+          # --------------------------
+
+          volumeMounts:
+            - name: kafka-certs
+              mountPath: /app/certs
+              readOnly: true
+      volumes:
+        - name: kafka-certs
+          secret:
+            secretName: go-microservice-user
