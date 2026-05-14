@@ -20,6 +20,8 @@ spec:
             - containerPort: 1025 # Mailing Port (SMTP)
             - containerPort: 8025 # Web UI Port
           env:
+            - name: MP_SMTP_AUTH_ACCEPT_ANY
+              value: "1"
             - name: SMTP_USERNAME
               valueFrom:
                 secretKeyRef:
