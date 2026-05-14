@@ -21,7 +21,9 @@ spec:
             - containerPort: 8025 # Web UI Port
           env:
             - name: MP_SMTP_AUTH_ACCEPT_ANY
-              value: "1"
+              value: "true"
+            - name: MP_SMTP_AUTH_ALLOW_INSECURE
+              value: "true"
             - name: SMTP_USERNAME
               valueFrom:
                 secretKeyRef:
