@@ -51,6 +51,7 @@ func main() {
 		"ssl.certificate.location": "/app/certs/user.crt",
 		"ssl.key.location":         "/app/certs/user.key",
 		"auto.offset.reset":        "earliest", 
+		"enable.ssl.certificate.verification": false,
 	})
 	if err != nil {
 		fmt.Printf("Failed to create consumer: %v\n", err)
