@@ -9,3 +9,4 @@ resources:
   - reflector-app.yaml
   - java-backend-app.yaml
   - scripts.yaml
+  - profile-update.yaml
