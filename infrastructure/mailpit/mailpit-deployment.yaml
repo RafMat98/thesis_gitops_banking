@@ -15,15 +15,11 @@ spec:
     spec:
       containers:
         - name: mailpit
-          image: axllent/mailpit:latest
+          image: axllent/mailpit:v1.21.0
           ports:
-            - containerPort: 1025 # Mailing Port (SMTP)
-            - containerPort: 8025 # Web UI Port
+            - containerPort: 1025
+            - containerPort: 8025
           env:
-            - name: MP_SMTP_AUTH_ACCEPT_ANY
-              value: "true"
-            - name: MP_SMTP_AUTH_ALLOW_INSECURE
-              value: "true"
             - name: SMTP_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -34,3 +30,36 @@ spec:
                 secretKeyRef:
                   name: mailer-smtp-secret
                   key: smtp-password
+            - name: MP_SMTP_AUTH
+              value: "$(SMTP_USERNAME):$(SMTP_PASSWORD)"
+            - name: MP_SMTP_TLS_CERT
+              value: "/certs/tls.crt"
+            - name: MP_SMTP_TLS_KEY
+              value: "/certs/tls.key"
+          volumeMounts:
+            - name: tls-volume
+              mountPath: "/certs"
+              readOnly: true
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+            limits:
+              memory: "128Mi"
+              cpu: "200m"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8025
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8025
+            initialDelaySeconds: 5
+            periodSeconds: 10
+      volumes:
+        - name: tls-volume
+          secret:
+            secretName: mailpit-tls-secret
