@@ -99,7 +99,7 @@ spec:
           - Describe
       - resource:
           type: group
-          name: " go-microservice-group"
+          name: "go-microservice-group"
           patternType: literal
         operations:
           - Read
