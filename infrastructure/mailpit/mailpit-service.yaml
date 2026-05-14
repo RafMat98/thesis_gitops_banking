@@ -19,10 +19,11 @@ metadata:
   name: mailpit
   namespace: infra-system
 spec:
-  type: ClusterIP
+  type: NodePort
   ports:
     - name: smtp
       port: 1025
       targetPort: 1025
+      nodePort: 30081 # SMTP Port exposed on the host for external access
   selector:
     app: mailpit
