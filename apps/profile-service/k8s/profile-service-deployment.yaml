@@ -25,7 +25,7 @@ spec:
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: redis-secrets
+                  name: redis-auth
                   key: password
             - name: KAFKA_BROKERS
               value: "main-cluster-kafka-bootstrap.infra-system.svc.cluster.local:9093"
