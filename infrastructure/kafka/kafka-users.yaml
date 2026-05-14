@@ -95,6 +95,7 @@ spec:
           name: "profile-updates"
           patternType: literal
         operations:
+          - Read # For testing, the Go microservice will also consume profile updates to enrich responses
           - Write
           - Describe
       - resource:
