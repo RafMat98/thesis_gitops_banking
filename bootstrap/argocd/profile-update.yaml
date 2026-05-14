@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: profile-service
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: "https://github.com/RafMat98/thesis_gitops_banking.git"
+    targetRevision: development
+    path: apps/profile-service/k8s
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: banking-apps
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
