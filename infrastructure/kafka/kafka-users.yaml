@@ -106,6 +106,14 @@ spec:
           - Read
           - Write
           - Describe
+      - resource:
+          type: group
+          name: "test-go-microservice-group"
+          patternType: literal
+        operations:
+          - Read
+          - Write
+          - Describe
   template:
     secret:
       metadata:
