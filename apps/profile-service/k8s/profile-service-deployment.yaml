@@ -21,7 +21,7 @@ spec:
           imagePullPolicy: Always
           env:
             - name: REDIS_ADDR
-              value: "redis-service.infra-system.svc.cluster.local:6379"
+              value: "redis.infra-system.svc.cluster.local:6379"
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
