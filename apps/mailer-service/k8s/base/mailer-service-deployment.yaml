@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-mailer-service
+  namespace: banking-apps
+  labels:
+    app: mailer-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mailer-service
+  template:
+    metadata:
+      labels:
+        app: mailer-service
+    spec:
+      containers:
+        - name: mailer-service
+          image: rmat98/go-mailer-service:v1.0.0
+          imagePullPolicy: Always
+          env:
+            - name: SMTP_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: smtp-mailer-secret
+                  key: smtp-host
+            - name: SMTP_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: smtp-mailer-secret
+                  key: smtp-port
+            - name: SMTP_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: smtp-mailer-secret
+                  key: smtp-username
+            - name: SMTP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: smtp-mailer-secret
+                  key: smtp-password
+            - name: KAFKA_BROKERS
+              valueFrom:
+                secretKeyRef:
+                  name: kafka-broker
+                  key: kafka-broker
+
+          # --- Adding resource requests and limits for better scheduling and stability ---
+          resources:
+            requests:
+              cpu: "50m" # 1/20 of a CPU core (for normal operation)
+              memory: "64Mi" # 64 MB RAM
+            limits:
+              cpu: "200m" # 1/5 of a CPU core (for spikes when reading many messages)
+              memory: "128Mi" # 128 MB RAM (Hard limit, if it exceeds this it will be killed)
+          # --------------------------
+
+          volumeMounts:
+            - name: kafka-certs
+              mountPath: /app/certs
+              readOnly: true
+      volumes:
+        - name: kafka-certs
+          secret:
+            secretName: go-mailer-user
