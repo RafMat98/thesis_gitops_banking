@@ -2,18 +2,21 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: keda-metrics-monitor
-  namespace: monitoring-system # <--- ΠΡΕΠΕΙ να είναι εδώ
+  namespace: monitoring-system
   labels:
-    release: kube-prometheus-stack # <--- Το label που είδαμε ότι δουλεύει στα άλλα
+    release: kube-prometheus-stack
+
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/name: keda-operator-metrics-apiserver
+      app: keda-operator-metrics-apiserver
+
   namespaceSelector:
     matchNames:
-      - keda # <--- Εδώ του λέμε να ψάξει στο namespace του KEDA
+      - keda
+
   endpoints:
-    - port: metrics # Αυτό είναι το όνομα της θύρας στο KEDA service
+    - port: metrics
       path: /metrics
       interval: 10s
       scheme: http
