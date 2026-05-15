@@ -11,7 +11,7 @@ spec:
   triggers:
     - type: kafka
       metadata:
-        bootstrapServers: main-cluster-kafka-bootstrap.infra-system.svc:9093 # Port 9093
+        bootstrapServers: main-cluster-kafka-bootstrap.infra-system.svc.cluster.local:9093 # Port 9093
         topic: profile-updates
         consumerGroup: go-mailer-group
         lagThreshold: "5"
