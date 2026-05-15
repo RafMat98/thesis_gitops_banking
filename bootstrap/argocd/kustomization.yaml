@@ -10,3 +10,4 @@ resources:
   - java-backend-app.yaml
   - scripts.yaml
   - profile-update.yaml
+  - mailer-service.yaml
