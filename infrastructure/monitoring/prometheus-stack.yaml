@@ -13,6 +13,7 @@ spec:
     matchNames:
       - keda
   endpoints:
-    - port: http-metrics
+    - port: metrics-api
       path: /metrics
-      interval: 10s
+      interval: 5s
+      scheme: http
