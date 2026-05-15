@@ -25,14 +25,14 @@ def main():
         if r.ping():
             print(f"Connected to Redis at {redis_host}:{redis_port}")
         
-        print("Job starting to add 100 accounts...")
+        print("Job starting to add 10000 accounts...")
         pipe = r.pipeline()
         for i in r.keys('ACC-*'):
             pipe.delete(i)
         
         pipe.execute()
         
-        for i in range(1, 101):
+        for i in range(1, 10001):
             acc_id = f"ACC-{i:06d}" 
             name = f"Customer_{i}"
             email = f"customer_{i}@banking.local"
