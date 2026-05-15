@@ -16,5 +16,6 @@ spec:
         consumerGroup: go-mailer-group
         lagThreshold: "5"
         authMode: tls
+        tls: enable
       authenticationRef:
         name: keda-kafka-auth
