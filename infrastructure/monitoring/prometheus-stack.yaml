@@ -1,19 +1,37 @@
+# 1. Το Service που "ξέχασε" να φτιάξει το Strimzi
+apiVersion: v1
+kind: Service
+metadata:
+  name: main-cluster-kafka-exporter
+  namespace: infra-system
+  labels:
+    strimzi.io/cluster: main-cluster
+    strimzi.io/name: main-cluster-kafka-exporter
+spec:
+  selector:
+    strimzi.io/name: main-cluster-kafka-exporter # Βρίσκει το Pod του Exporter
+  ports:
+    - name: tcp-prometheus
+      port: 9404
+      targetPort: 9404
+
+---
+# 2. Το ServiceMonitor για τον Prometheus Operator
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: strimzi-kafka-exporter-monitor
   namespace: monitoring-system
   labels:
-    release: kube-prometheus-stack # Το κλειδί για να το δει ο Prometheus
+    release: kube-prometheus-stack # Το κλειδί για τον Operator
 spec:
   selector:
     matchLabels:
-      strimzi.io/cluster: main-cluster
-      strimzi.io/name: main-cluster-kafka-exporter
+      strimzi.io/name: main-cluster-kafka-exporter # Στοχεύει το Service που φτιάξαμε ακριβώς από πάνω
   namespaceSelector:
     matchNames:
-      - infra-system # Το namespace του Kafka
+      - infra-system
   endpoints:
-    - port: tcp-prometheus # Αυτό είναι το default όνομα θύρας του Strimzi Exporter
+    - port: tcp-prometheus # Το όνομα της θύρας που ορίσαμε
       path: /metrics
       interval: 10s
