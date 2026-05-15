@@ -12,3 +12,4 @@ resources:
   - profile-update.yaml
   - mailer-service.yaml
   - monitoring-app.yaml
+  - banking-monitoring-confg.yaml

@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: banking-comparison-dashboard
+  namespace: monitoring-system
+  labels:
+    grafana_dashboard: "1"
+data:
+  keda-vs-hpa.json: |-
+    {
+      "title": "KEDA vs HPA: Banking Stress Test",
+      "panels": [
+        {
+          "title": "Kafka Consumer Lag",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+          "targets": [
+            { "expr": "sum(keda_scaler_metrics_value{scaledObject='mailer-kafka-scaler'})", "legendFormat": "Pending Messages" }
+          ]
+        },
+        {
+          "title": "Replicas: KEDA vs HPA",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+          "targets": [
+            { "expr": "kube_deployment_status_replicas_available{deployment='mailer-go'}", "legendFormat": "KEDA Replicas (Event-Driven)" },
+            { "expr": "kube_horizontalpodautoscaler_status_current_replicas{horizontalpodautoscaler='mailer-hpa'}", "legendFormat": "HPA Replicas (Resource-Based)" }
+          ]
+        },
+        {
+          "title": "CPU Utilization (%)",
+          "type": "gauge",
+          "gridPos": { "h": 8, "w": 24, "x": 0, "y": 8 },
+          "targets": [
+            { "expr": "sum(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate{namespace='banking-apps', pod=~'mailer-go-.*'}) / sum(kube_pod_container_resource_requests{resource='cpu', namespace='banking-apps'}) * 100", "legendFormat": "Avg CPU Usage" }
+          ]
+        }
+      ]
+    }
