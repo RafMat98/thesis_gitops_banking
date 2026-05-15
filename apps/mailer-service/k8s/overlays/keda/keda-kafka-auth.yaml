@@ -1,0 +1,19 @@
+apiVersion: keda.sh/v1alpha1
+kind: TriggerAuthentication
+metadata:
+  name: keda-kafka-auth
+  namespace: banking-apps
+spec:
+  secretTargetRef:
+    # 1. CA Cluster (Reflected from Strimzi)
+    - parameter: ca
+      name: main-cluster-cluster-ca-cert
+      key: ca.crt
+    # 2. The User's Certificate (Reflected from the KafkaUser)
+    - parameter: cert
+      name: kafka-keda-user
+      key: user.crt
+    # 3. The User's Private Key
+    - parameter: key
+      name: kafka-keda-user
+      key: user.key
