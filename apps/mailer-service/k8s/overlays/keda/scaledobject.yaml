@@ -1,0 +1,20 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: mailer-kafka-scaler
+  namespace: banking-apps
+spec:
+  scaleTargetRef:
+    name: go-mailer-service
+  minReplicaCount: 1
+  maxReplicaCount: 10
+  triggers:
+    - type: kafka
+      metadata:
+        bootstrapServers: main-cluster-kafka-bootstrap.infra-system.svc:9093 # Port 9093
+        topic: profile-updates
+        consumerGroup: go-mailer-group
+        lagThreshold: "5"
+        authMode: tls
+      authenticationRef:
+        name: keda-kafka-auth
