@@ -13,7 +13,7 @@ spec:
     matchNames:
       - keda # <--- Εδώ του λέμε να ψάξει στο namespace του KEDA
   endpoints:
-    - port: metrics-api # Αυτό είναι το όνομα της θύρας στο KEDA service
+    - port: metrics # Αυτό είναι το όνομα της θύρας στο KEDA service
       path: /metrics
       interval: 10s
       scheme: http
