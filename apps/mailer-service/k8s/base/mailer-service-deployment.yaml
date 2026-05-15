@@ -30,7 +30,7 @@ spec:
                 secretKeyRef:
                   name: mailer-smtp-secret
                   key: smtp-port
-            - name: SMTP_USERNAME
+            - name: SMTP_USER
               valueFrom:
                 secretKeyRef:
                   name: mailer-smtp-secret
