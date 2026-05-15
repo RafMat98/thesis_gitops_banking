@@ -175,16 +175,19 @@ spec:
           type: topic
           name: "profile-updates"
           patternType: literal
-        operation: Describe
+        operations:
+          - Describe
       - resource:
           type: group
           name: "go-mailer-group"
           patternType: literal
-        operation: Describe
+        operations:
+          - Describe
       # Attention: The KEDA autoscaler only needs Describe permissions to monitor lag, but we can also give it Read permissions for better observability in case we want to check consumer offsets or other details. Write permissions are not strictly necessary for the autoscaler, but they can be useful if we want to allow it to commit offsets or perform other actions in the future.
       - resource:
           type: cluster
-        operation: Describe
+        operations:
+          - Describe
   template:
     secret:
       metadata:
