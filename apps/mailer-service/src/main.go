@@ -166,8 +166,8 @@ func main() {
 				if err := sendEmail(data, smtpHost, smtpPort, smtpUser, smtpPass); err != nil {
 					fmt.Printf(" Failed to send email to %s: %v\n", data.Email, err)
 				} else {
-					fmt.Printf("[%s]  Email sent to %s (Account: %s, Balance: %.2f €)\n",
-						time.Now().Format("15:04:05"), data.Email, data.AccountID, data.Balance)
+					fmt.Printf("[%s]  Email sent to %s (Account: %s)\n",
+						time.Now().Format("15:04:05"), data.Email, data.AccountID)
 				}
 
 			case kafka.Error:
