@@ -1,22 +1,19 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: keda-metrics-monitor
+  name: strimzi-kafka-exporter-monitor
   namespace: monitoring-system
   labels:
-    release: kube-prometheus-stack
-
+    release: kube-prometheus-stack # Το κλειδί για να το δει ο Prometheus
 spec:
   selector:
     matchLabels:
-      app: keda-operator-metrics-apiserver
-
+      strimzi.io/cluster: main-cluster
+      strimzi.io/name: main-cluster-kafka-exporter
   namespaceSelector:
     matchNames:
-      - keda
-
+      - infra-system # Το namespace του Kafka
   endpoints:
-    - port: metrics
+    - port: tcp-prometheus # Αυτό είναι το default όνομα θύρας του Strimzi Exporter
       path: /metrics
       interval: 10s
-      scheme: http

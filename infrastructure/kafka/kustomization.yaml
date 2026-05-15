@@ -7,3 +7,4 @@ resources:
   - kafka-cluster.yaml
   - kafka-topics.yaml
   - kafka-users.yaml
+  - kafka-metrics-config.yaml
