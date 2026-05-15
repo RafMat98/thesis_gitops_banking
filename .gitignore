@@ -5,3 +5,4 @@ tasks/
 certs/
 apps/inquiry-backend/src/main/resources/certs/
 application-dev.yaml
+secrets/

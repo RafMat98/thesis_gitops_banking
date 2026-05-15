@@ -11,3 +11,4 @@ resources:
   - scripts.yaml
   - profile-update.yaml
   - mailer-service.yaml
+  - monitoring-app.yaml
