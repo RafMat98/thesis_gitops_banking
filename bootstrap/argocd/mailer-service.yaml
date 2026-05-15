@@ -19,3 +19,9 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - ServerSideApply=true
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      name: go-mailer-service
+      jsonPointers:
+        - /spec/replicas
