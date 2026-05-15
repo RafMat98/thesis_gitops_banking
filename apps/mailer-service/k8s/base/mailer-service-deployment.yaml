@@ -23,22 +23,22 @@ spec:
             - name: SMTP_HOST
               valueFrom:
                 secretKeyRef:
-                  name: smtp-mailer-secret
+                  name: mailer-smtp-secret
                   key: smtp-host
             - name: SMTP_PORT
               valueFrom:
                 secretKeyRef:
-                  name: smtp-mailer-secret
+                  name: mailer-smtp-secret
                   key: smtp-port
             - name: SMTP_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: smtp-mailer-secret
+                  name: mailer-smtp-secret
                   key: smtp-username
             - name: SMTP_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: smtp-mailer-secret
+                  name: mailer-smtp-secret
                   key: smtp-password
             - name: KAFKA_BROKERS
               valueFrom:
