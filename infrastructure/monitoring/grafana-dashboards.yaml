@@ -6,34 +6,43 @@ metadata:
   labels:
     grafana_dashboard: "1"
 data:
-  keda-vs-hpa.json: |-
+  keda-vs-hpa-unified.json: |-
     {
-      "title": "KEDA vs HPA: Banking Stress Test",
+      "title": "Unified Scaling Analysis: KEDA vs HPA",
+      "timezone": "browser",
       "panels": [
         {
-          "title": "Kafka Consumer Lag",
+          "title": "Kafka Ingress Lag (The Cause)",
           "type": "timeseries",
-          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+          "gridPos": { "h": 8, "w": 24, "x": 0, "y": 0 },
           "targets": [
-            { "expr": "sum(keda_scaler_metrics_value{scaledObject='mailer-kafka-scaler'})", "legendFormat": "Pending Messages" }
-          ]
+            { "expr": "sum(keda_scaler_metrics_value{scaledObject='mailer-kafka-scaler'}) or vector(0)", "legendFormat": "Messages Waiting in Kafka" }
+          ],
+          "fieldConfig": { "defaults": { "color": { "mode": "palette-classic" }, "custom": { "drawStyle": "area", "fillOpacity": 20 } } }
         },
         {
-          "title": "Replicas: KEDA vs HPA",
+          "title": "System Response: Active Replicas",
           "type": "timeseries",
-          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+          "gridPos": { "h": 9, "w": 12, "x": 0, "y": 8 },
           "targets": [
-            { "expr": "kube_deployment_status_replicas_available{deployment='mailer-go'}", "legendFormat": "KEDA Replicas (Event-Driven)" },
-            { "expr": "kube_horizontalpodautoscaler_status_current_replicas{horizontalpodautoscaler='mailer-hpa'}", "legendFormat": "HPA Replicas (Resource-Based)" }
-          ]
+            { "expr": "kube_deployment_status_replicas_available{deployment='go-mailer-service'}", "legendFormat": "Current Running Pods" },
+            { "expr": "kube_horizontalpodautoscaler_status_desired_replicas{horizontalpodautoscaler='mailer-hpa'}", "legendFormat": "HPA Desired Level" }
+          ],
+          "description": "Shows how many pods are actually running vs what the HPA wants."
         },
         {
-          "title": "CPU Utilization (%)",
+          "title": "CPU Usage vs Limit (%)",
           "type": "gauge",
-          "gridPos": { "h": 8, "w": 24, "x": 0, "y": 8 },
+          "gridPos": { "h": 9, "w": 12, "x": 12, "y": 8 },
           "targets": [
-            { "expr": "sum(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate{namespace='banking-apps', pod=~'mailer-go-.*'}) / sum(kube_pod_container_resource_requests{resource='cpu', namespace='banking-apps'}) * 100", "legendFormat": "Avg CPU Usage" }
-          ]
+            { "expr": "sum(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate{namespace='banking-apps', pod=~'go-mailer-service-.*'}) / sum(kube_pod_container_resource_limits{resource='cpu', namespace='banking-apps', pod=~'go-mailer-service-.*'}) * 100", "legendFormat": "CPU Load" }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "min": 0, "max": 100,
+              "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "red", "value": 80 } ] }
+            }
+          }
         }
       ]
     }
