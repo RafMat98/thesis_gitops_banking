@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/YOUR_USER/banking_thesis.git
+    repoURL: "https://github.com/RafMat98/thesis_gitops_banking.git"
     targetRevision: development
     path: infrastructure/monitoring
   destination:
