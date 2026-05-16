@@ -25,3 +25,4 @@ spec:
       name: go-mailer-service
       jsonPointers:
         - /spec/replicas
+---
