@@ -63,7 +63,7 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-    # - ServerSideApply=true
+      - ServerSideApply=true
   ignoreDifferences: # ← ΕΔΩ
     - group: admissionregistration.k8s.io
       kind: ValidatingWebhookConfiguration
