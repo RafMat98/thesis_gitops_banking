@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: "https://github.com/RafMat98/thesis_gitops_banking.git"
     targetRevision: development
-    path: apps/mailer-service/k8s/overlays/hpa #
+    path: apps/mailer-service/k8s/overlays/hpa
   destination:
     server: "https://kubernetes.default.svc"
     namespace: banking-apps
@@ -25,4 +25,3 @@ spec:
       name: go-mailer-service
       jsonPointers:
         - /spec/replicas
----
