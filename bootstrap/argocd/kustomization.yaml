@@ -2,7 +2,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 #Fixing #2
 resources:
-  # - infrastructure-app.yaml
+  - infrastructure-app.yaml
   - redis-app.yaml
   - mailpit-app.yaml
   - keda-app.yaml
@@ -12,4 +12,4 @@ resources:
   - profile-update.yaml
   - mailer-service.yaml
   - monitoring-app.yaml
-  - banking-monitoring-confg.yaml
+  - banking-monitoring-config.yaml
