@@ -21,18 +21,35 @@ spec:
             type: NodePort
             nodePort: 32000
 
+        prometheusOperator:
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+
         prometheus:
           prometheusSpec:
             serviceMonitorSelectorNilUsesHelmValues: false
             ruleSelectorNilUsesHelmValues: false
-
-        resources:
+            
+            resources:
               requests:
                 cpu: 200m
                 memory: 1Gi
               limits:
                 cpu: 1000m
                 memory: 2Gi
+            
+            storageSpec:
+              volumeClaimTemplate:
+                spec:
+                  accessModes: ["ReadWriteOnce"]
+                  resources:
+                    requests:
+                      storage: 10Gi
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring-system
