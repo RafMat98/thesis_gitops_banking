@@ -43,14 +43,14 @@ spec:
                 cpu: 1000m
                 memory: 2Gi
             
-          storageSpec:
-            volumeClaimTemplate:
-              spec:
-                storageClassName: proxmox-nvme
-                accessModes: ["ReadWriteOnce"]
-                resources:
-                  requests:
-                    storage: 10Gi
+            storageSpec:
+              volumeClaimTemplate:
+                spec:
+                  storageClassName: proxmox-nvme
+                  accessModes: ["ReadWriteOnce"]
+                  resources:
+                    requests:
+                      storage: 10Gi
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring-system
