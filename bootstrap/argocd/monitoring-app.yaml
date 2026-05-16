@@ -25,6 +25,14 @@ spec:
           prometheusSpec:
             serviceMonitorSelectorNilUsesHelmValues: false
             ruleSelectorNilUsesHelmValues: false
+
+        resources:
+              requests:
+                cpu: 200m
+                memory: 1Gi
+              limits:
+                cpu: 1000m
+                memory: 2Gi
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring-system
