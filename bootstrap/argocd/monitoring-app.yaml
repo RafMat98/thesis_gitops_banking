@@ -22,6 +22,8 @@ spec:
             nodePort: 32000
 
         prometheusOperator:
+          nodeSelector: 
+            kubernetes.io/hostname: talos-4zb-66h
           resources:
             requests:
               cpu: 100m
@@ -34,7 +36,8 @@ spec:
           prometheusSpec:
             serviceMonitorSelectorNilUsesHelmValues: false
             ruleSelectorNilUsesHelmValues: false
-            
+            nodeSelector: 
+              kubernetes.io/hostname: talos-4zb-66h
             resources:
               requests:
                 cpu: 200m
