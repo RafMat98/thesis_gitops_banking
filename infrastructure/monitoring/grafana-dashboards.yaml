@@ -98,7 +98,7 @@ data:
           "gridPos": { "h": 8, "w": 12, "x": 0, "y": 44 },
           "targets": [
             { "expr": "kube_deployment_status_replicas_available{deployment='go-mailer-service'}", "legendFormat": "Current Running Pods" },
-            { "expr": "kube_horizontalpodautoscaler_status_desired_replicas{horizontalpodautoscaler='keda-hpa-mailer-kafka-scaler'}", "legendFormat": "HPA Desired Level" }
+            { "expr": "kube_horizontalpodautoscaler_status_desired_replicas{horizontalpodautoscaler='keda-hpa-mailer-kafka-scaler'}", "legendFormat": "HPA Desired Level" },
             { "expr": "kube_horizontalpodautoscaler_status_desired_replicas{horizontalpodautoscaler='mailer-hpa'}", "legendFormat": "HPA Desired Level" }
           ]
         },
