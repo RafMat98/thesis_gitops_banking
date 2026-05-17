@@ -15,7 +15,6 @@ USER spring
 # Copy the jar file from the Stage 1
 COPY --from=build /app/target/*.jar app.jar
 
-
 EXPOSE 8080
 
 ENTRYPOINT ["java", "-jar", "app.jar"]
