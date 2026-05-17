@@ -63,7 +63,7 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: go-backend
+      app: mailer-service
   namespaceSelector:
     - matchNames:
         - banking-apps
