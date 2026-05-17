@@ -110,6 +110,23 @@ data:
             { "expr": "sum(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate{namespace='banking-apps', pod=~'go-mailer-service-.*'}) / sum(kube_pod_container_resource_limits{resource='cpu', namespace='banking-apps', pod=~'go-mailer-service-.*'}) * 100", "legendFormat": "CPU Load" }
           ],
           "fieldConfig": { "defaults": { "min": 0, "max": 100, "unit": "percent", "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "red", "value": 80 } ] } } }
+        },
+        {
+          "title": "Java Spring Boot Service: Api Requests",
+          "type": "stat",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 44 },
+          "targets": [
+            { "expr": "sum(max_over_time(inquiry_requests_total[15m]))", "legendFormat": "Api Requests" }
+          ]
+        },
+        {
+          "title": "Go Profile Service: Mails Sent",
+          "type": "stat",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 44 },
+          "targets": [
+            { "expr": "sum(max_over_time(go_emails_processed_total{status=\"success\"}[15m]))", "legendFormat": "Mails Sent" }
+          ]
         }
+
       ]
     }
