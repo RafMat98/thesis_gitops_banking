@@ -52,3 +52,22 @@ spec:
     - port: java-http-metrics # ◄ Το όνομα (name) της πόρτας όπως το έχεις δηλώσει στο Service σου
       path: /actuator/prometheus # ◄ Το path της Java (Default για το Micrometer)
       interval: 5s # Κάθε 5 δευτερόλεπτα
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: go-backend-monitor
+  namespace: monitoring-system
+  labels:
+    release: kube-prometheus-stack
+spec:
+  selector:
+    matchLabels:
+      app: go-backend
+  namespaceSelector:
+    - matchNames:
+        - banking-apps
+  endpoints:
+    - port: go-http-metrics
+      path: /metrics
+      interval: 5s
