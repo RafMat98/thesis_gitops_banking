@@ -172,7 +172,7 @@ pipeline {
                                 echo "Pushing updated manifest to GitHub..."
                                 sh "git add ${yamlPath}"
                                 sh "git commit -m 'chore(gitops): auto-release ${env.IMAGE_TAG} [skip ci]'"
-                                sh "git push origin main"
+                                sh "git push origin development"
                                 echo "✅ GitHub Manifest updated! ArgoCD will catch it shortly."
                             } else {
                                 echo "No changes detected in YAML. Skipping push."
