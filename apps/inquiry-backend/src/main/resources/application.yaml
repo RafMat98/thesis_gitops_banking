@@ -18,11 +18,5 @@ camel:
       ssl-keystore-password: ${KAFKA_KEYSTORE_PASSWORD}
 
 # --- ΕΔΩ ΜΠΑΙΝΕΙ ΤΟ ACTUATOR, ΚΑΘΑΡΟ ΚΑΙ ΑΝΕΞΑΡΤΗΤΟ ---
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "prometheus,health"
-  endpoint:
-    prometheus:
-      enabled: true
+management.endpoints.web.exposure.include: "prometheus,health"
+management.endpoint.prometheus.enabled: true
