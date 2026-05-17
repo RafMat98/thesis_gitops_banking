@@ -24,8 +24,7 @@ pipeline {
                     
                     // Check code changes only in deployment/CD folders
                     env.SKIP_DEPLOYMENT = paths.every { 
-                        it.startsWith('apps/inquiry-backend/app/') ||
-                        it == 'Jenkinsfile'
+                        it.startsWith('apps/inquiry-backend/app/') 
                     } ? 'false' : 'true'
 
                     echo "Skip deployment status set to: ${env.SKIP_DEPLOYMENT}"
