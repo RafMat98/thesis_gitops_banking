@@ -3,3 +3,4 @@ kind: Kustomization
 
 resources:
   - mailer-service-deployment.yaml
+  - service.yaml
