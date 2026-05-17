@@ -22,7 +22,7 @@ pipeline {
                     def allChanges = currentBuild.changeSets*.items.flatten()
                     def paths = allChanges.collectMany { it.affectedFiles*.path }
                     
-                    // Check code changes only in deployment/CD folders
+                    // Check code changes only in app folder, ignoring k8s and other infra changes
                     env.SKIP_DEPLOYMENT = paths.every { 
                         it.startsWith('apps/inquiry-backend/app/') 
                     } ? 'false' : 'true'
