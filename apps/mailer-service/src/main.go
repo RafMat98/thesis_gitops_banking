@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"net/smtp"
 	"os"
 	"os/signal"
@@ -12,7 +13,25 @@ import (
 	"time"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
+	// ◄ Προστέθηκαν τα πακέτα του Prometheus
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
+
+var (
+	emailsSentTotal = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Name: "go_emails_processed_total",
+			Help: "Total number of notification emails processed from Kafka",
+		},
+		[]string{"status"}, //"success" or "error"
+	)
+)
+
+func init() {
+	// --- 2. REGISTRATION FOR METRIC PROMETHEUS ---
+	prometheus.MustRegister(emailsSentTotal)
+}
 
 // EnrichedMessage represents the data model consumed from the Kafka topic.
 // It contains account and customer information used to send balance notification emails.
@@ -92,6 +111,13 @@ func sendEmail(msg EnrichedMessage, smtpHost string, smtpPort string, smtpUser s
 
 func main() {
 
+	go func() {
+		http.Handle("/metrics", promhttp.Handler())
+		fmt.Println("📈 Prometheus metrics server listening on :8081/metrics")
+		if err := http.ListenAndServe(":8081", nil); err != nil {
+			fmt.Printf("Metrics server failed to start: %v\n", err)
+		}
+	}()
 	// --- Processing delay (used to simulate heavy workload and trigger KEDA scaling) ---
 	delayStr := os.Getenv("PROCESSING_DELAY_MS")
 	delayMs, err := strconv.Atoi(delayStr)
@@ -165,9 +191,11 @@ func main() {
 				// Attempt to send the notification email
 				if err := sendEmail(data, smtpHost, smtpPort, smtpUser, smtpPass); err != nil {
 					fmt.Printf(" Failed to send email to %s: %v\n", data.Email, err)
+					emailsSentTotal.WithLabelValues("error").Inc()
 				} else {
 					fmt.Printf("[%s]  Email sent to %s (Account: %s)\n",
 						time.Now().Format("15:04:05"), data.Email, data.AccountID)
+					emailsSentTotal.WithLabelValues("success").Inc()
 				}
 
 			case kafka.Error:
