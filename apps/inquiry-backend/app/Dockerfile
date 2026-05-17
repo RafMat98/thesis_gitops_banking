@@ -8,11 +8,11 @@ RUN mvn clean package -DskipTests
 FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
 
-# Δημιουργία μη-προνομιούχου χρήστη για ασφάλεια (Kubernetes Security Best Practices)
+# Create non-root user for security (Kubernetes Security Best Practices)
 RUN adduser --system --group spring
 USER spring
 
-# Αντιγραφή του τελικού jar από το Stage 1
+# Copy the jar file from the Stage 1
 COPY --from=build /app/target/*.jar app.jar
 # COPY --from=build /app/certs /app/certs #Only if you have certs to copy in local testing, otherwise the volume mount in k8s will handle it
 
