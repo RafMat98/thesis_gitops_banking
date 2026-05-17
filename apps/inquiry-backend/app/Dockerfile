@@ -11,7 +11,6 @@ WORKDIR /app
 # Create non-root user for security (Kubernetes Security Best Practices)
 RUN adduser --system --group spring
 USER spring
-
 # Copy the jar file from the Stage 1
 COPY --from=build /app/target/*.jar app.jar
 
