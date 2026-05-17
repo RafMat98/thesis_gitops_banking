@@ -37,6 +37,8 @@ spec:
 
         prometheus:
           prometheusSpec:
+            serviceMonitorSelector: {}
+            serviceMonitorNamespaceSelector: {}
             serviceMonitorSelectorNilUsesHelmValues: false
             ruleSelectorNilUsesHelmValues: false
             nodeSelector: 
