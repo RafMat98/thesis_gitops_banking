@@ -40,13 +40,14 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: spring-backend-monitor
-  namespaceSelector:
-    matchNames:
-      - banking-apps
+  namespace: monitoring-system
 spec:
   selector:
     matchLabels:
       app: inquiry-backend # ◄ Πρέπει να είναι ΤΟ ΙΔΙΟ label που έχει το Service της Java
+  namespaceSelector:
+    matchNames:
+      - banking-apps
   endpoints:
     - port: java-http-metrics # ◄ Το όνομα (name) της πόρτας όπως το έχεις δηλώσει στο Service σου
       path: /actuator/prometheus # ◄ Το path της Java (Default για το Micrometer)
