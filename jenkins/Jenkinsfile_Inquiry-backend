@@ -104,7 +104,8 @@ pipeline {
             steps {
                 retry(3) {
                     script {
-                        sh "docker build -t ${DOCKER_HUB_REPO}:${env.IMAGE_TAG} ."
+                        dir('apps/inquiry-backend/app') {  // 
+                            sh "docker build -t ${DOCKER_HUB_REPO}:${env.IMAGE_TAG} ."
                     }
                 }
             }
