@@ -19,10 +19,9 @@ public class InquiryController {
     private final Counter requestCounter;
 
     @Autowired
-    public InquiryController(ProducerTemplate producerTemplate) { // ◄ Μόνο ο Camel template εδώ
+    public InquiryController(ProducerTemplate producerTemplate) { 
         this.producerTemplate = producerTemplate;
         
-        // ◄ Χρήση του globalRegistry για να μην κρασάρει ποτέ η Spring
         this.requestCounter = Counter.builder("inquiry_requests_total")
                 .description("Total banking inquiry requests received by the backend")
                 .tag("endpoint", "balance")
