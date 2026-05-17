@@ -98,12 +98,6 @@ pipeline {
             }
         }
 
-        stage('Build & Test') {
-            when { expression { env.SKIP_DEPLOYMENT == 'false' } }
-            steps {
-                sh './gradlew clean build --no-daemon'
-            }
-        }
 
         stage('Build Docker Image') {
             when { expression { env.SKIP_DEPLOYMENT == 'false' } }
