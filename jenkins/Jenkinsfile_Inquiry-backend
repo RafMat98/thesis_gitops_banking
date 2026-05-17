@@ -163,7 +163,7 @@ pipeline {
                         if (gitStatus != "") {
                             echo "Pushing updated manifest to GitHub..."
                             sh "git add ${yamlPath}"
-                            sh "git commit -m 'chore(gitops): auto-release ${env.IMAGE_TAG} [skip ci]'"
+                            sh "git commit -m 'chore(gitops): auto-release ${env.IMAGE_TAG}'"
                             
   
                             sh "git push https://${GH_USER}:${GH_TOKEN}@github.com/RafMat98/thesis_gitops_banking.git HEAD:development"
