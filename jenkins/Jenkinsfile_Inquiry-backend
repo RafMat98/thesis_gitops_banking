@@ -106,6 +106,7 @@ pipeline {
                     script {
                         dir('apps/inquiry-backend/app') {  // 
                             sh "docker build -t ${DOCKER_HUB_REPO}:${env.IMAGE_TAG} ."
+                        }
                     }
                 }
             }
