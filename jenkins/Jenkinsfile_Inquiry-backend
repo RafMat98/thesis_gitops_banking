@@ -146,39 +146,32 @@ pipeline {
         stage('Update Kubernetes Manifests (GitOps)') {
             when { expression { env.SKIP_DEPLOYMENT == 'false' } }
             steps {
-                // Επαναχρησιμοποιούμε το ήδη υπάρχον Git Credential σου!
                 withCredentials([usernamePassword(credentialsId: "${GITHUB_CRED_ID}", usernameVariable: 'GH_USER', passwordVariable: 'GH_TOKEN')]) {
                     script {
-                        // ΠΡΟΣΟΧΗ: Άλλαξε αυτά τα 2 αν τα manifests σου είναι σε άλλο repo!
-                        def gitUser = "RafMat98" 
-                        def repoName = "thesis_gitops_banking" 
-                        
-  
                         def yamlPath = "apps/inquiry-backend/k8s/deployment.yaml" // Path for deployment.yaml
                         
-                        echo "Cloning manifests branch/repo..."
-                        sh "git clone https://${GH_USER}:${GH_TOKEN}@github.com/${gitUser}/${repoName}.git k8s-repo"
-                        
-                        dir('k8s-repo') {
-                            sh 'git config user.name "Jenkins CI"'
-                            sh 'git config user.email "jenkins@ci.com"'
-                            
-                            echo "Modifying image tag in ${yamlPath} to ${env.IMAGE_TAG}..."
 
-                            sh "sed -i 's|image: ${DOCKER_HUB_REPO}:.*|image: ${DOCKER_HUB_REPO}:${env.IMAGE_TAG}|g' ${yamlPath}"
+                        sh 'git config user.name "Jenkins CI"'
+                        sh 'git config user.email "jenkins@ci.com"'
+                        
+ 
+                        echo "Modifying image tag in ${yamlPath} to ${env.IMAGE_TAG}..."
+                        sh "sed -i 's|image: ${DOCKER_HUB_REPO}:.*|image: ${DOCKER_HUB_REPO}:${env.IMAGE_TAG}|g' ${yamlPath}"
+                        
+                      
+                        def gitStatus = sh(script: "git status --porcelain", returnStdout: true).trim()
+                        if (gitStatus != "") {
+                            echo "Pushing updated manifest to GitHub..."
+                            sh "git add ${yamlPath}"
+                            sh "git commit -m 'chore(gitops): auto-release ${env.IMAGE_TAG} [skip ci]'"
                             
-                            def gitStatus = sh(script: "git status --porcelain", returnStdout: true).trim()
-                            if (gitStatus != "") {
-                                echo "Pushing updated manifest to GitHub..."
-                                sh "git add ${yamlPath}"
-                                sh "git commit -m 'chore(gitops): auto-release ${env.IMAGE_TAG} [skip ci]'"
-                                sh "git push origin development"
-                                echo "✅ GitHub Manifest updated! ArgoCD will catch it shortly."
-                            } else {
-                                echo "No changes detected in YAML. Skipping push."
-                            }
+  
+                            sh "git push https://${GH_USER}:${GH_TOKEN}@github.com/RafMat98/thesis_gitops_banking.git HEAD:development"
+                            
+                            echo "✅ GitHub Manifest updated! ArgoCD will catch it shortly."
+                        } else {
+                            echo "No changes detected in YAML. Skipping push."
                         }
-                        sh "rm -rf k8s-repo"
                     }
                 }
             }
