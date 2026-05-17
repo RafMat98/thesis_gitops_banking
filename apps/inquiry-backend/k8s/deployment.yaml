@@ -33,6 +33,10 @@ spec:
                 secretKeyRef:
                   name: java-microservice-user
                   key: user.password
+            - name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE
+              value: "prometheus,health"
+            - name: MANAGEMENT_ENDPOINT_PROMETHEUS_ENABLED
+              value: "true"
           resources:
             requests:
               cpu: "250m"
