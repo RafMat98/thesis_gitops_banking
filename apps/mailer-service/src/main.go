@@ -1,15 +1,15 @@
 package main
 
 import (
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"net/smtp"
 	"os"
 	"os/signal"
-	"syscall"
 	"strconv"
+	"syscall"
 	"time"
-	"crypto/tls"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 )
@@ -96,7 +96,7 @@ func main() {
 	delayStr := os.Getenv("PROCESSING_DELAY_MS")
 	delayMs, err := strconv.Atoi(delayStr)
 	if err != nil || delayMs <= 0 {
-		delayMs = 500 // default: 500ms
+		delayMs = 100 // default: 100ms
 	}
 
 	// --- Kafka configuration ---

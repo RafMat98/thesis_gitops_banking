@@ -9,6 +9,9 @@ camel:
       # ssl-endpoint-algorithm: "" # Maybe needed for some Java versions, but can be left out if not required
       # Paths where Kubernetes will mount the Secrets
 
+      management.endpoints.web.exposure.include=prometheus,health
+      management.endpoint.prometheus.enabled=true
+
       ssl-truststore-location: /app/certs/ca.p12
       ssl-truststore-type: PKCS12
       ssl-truststore-password: ${KAFKA_TRUSTSTORE_PASSWORD}

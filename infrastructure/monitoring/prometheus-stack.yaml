@@ -35,3 +35,17 @@ spec:
     - port: tcp-prometheus # Το όνομα της θύρας που ορίσαμε
       path: /metrics
       interval: 10s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: spring-backend-monitor
+  namespace: banking-apps # Το namespace που τρέχει η Java
+spec:
+  selector:
+    matchLabels:
+      app: inquiry-backend # ◄ Πρέπει να είναι ΤΟ ΙΔΙΟ label που έχει το Service της Java
+  endpoints:
+    - port: java-http-metrics # ◄ Το όνομα (name) της πόρτας όπως το έχεις δηλώσει στο Service σου
+      path: /actuator/prometheus # ◄ Το path της Java (Default για το Micrometer)
+      interval: 5s # Κάθε 5 δευτερόλεπτα
