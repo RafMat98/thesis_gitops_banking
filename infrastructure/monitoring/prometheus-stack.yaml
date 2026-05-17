@@ -65,8 +65,8 @@ spec:
     matchLabels:
       app: mailer-service
   namespaceSelector:
-    - matchNames:
-        - banking-apps
+    matchNames:
+      - banking-apps
   endpoints:
     - port: go-http-metrics
       path: /metrics
