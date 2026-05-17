@@ -40,7 +40,9 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   name: spring-backend-monitor
-  namespace: banking-apps # Το namespace που τρέχει η Java
+  namespaceSelector:
+    matchNames:
+      - banking-apps
 spec:
   selector:
     matchLabels:
