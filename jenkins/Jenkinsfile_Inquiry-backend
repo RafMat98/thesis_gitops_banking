@@ -1,0 +1,204 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_HUB_REPO   = 'rmat98/java_backend'
+        GITHUB_CRED_ID    = 'Banking_thesis_Github_Repo'
+        DOCKER_CRED_ID    = 'Docker_hub'
+
+        DOCKER_HOST       = 'unix:///var/run/docker.sock'
+        DOCKER_TLS_VERIFY = ''
+        DOCKER_CERT_PATH  = ''
+    }
+    
+    triggers {
+        githubPush()
+    }
+
+    stages {
+        stage('Pre-Check: Set Skip Flag') {
+            steps {
+                script {
+                    def allChanges = currentBuild.changeSets*.items.flatten()
+                    def paths = allChanges.collectMany { it.affectedFiles*.path }
+                    
+                    // Check code changes only in deployment/CD folders
+                    env.SKIP_DEPLOYMENT = paths.every { 
+                        it.startsWith('apps/inquiry-backend/app/') ||
+                        it == 'Jenkinsfile'
+                    } ? 'false' : 'true'
+
+                    echo "Skip deployment status set to: ${env.SKIP_DEPLOYMENT}"
+                }
+            }
+        }
+
+        stage('Checkout Code') {
+            when { expression { env.SKIP_DEPLOYMENT == 'false' } }
+            steps {
+                echo "Relevant application code changes detected — proceeding with checkout..."
+                retry(3) {
+                    checkout([
+                        $class: 'GitSCM',
+                        branches: [[name: 'origin/development']],
+                        userRemoteConfigs: [[
+                            url: 'https://github.com/RafMat98/thesis_gitops_banking.git',
+                            credentialsId: "${GITHUB_CRED_ID}"
+                        ]]
+                    ])
+                }
+            }
+        }
+
+        stage('Skip Notification') {
+            when { expression { env.SKIP_DEPLOYMENT == 'true' } }
+            steps {
+                echo "\u001B[1;33m✅ No relevant code changes detected — skipping deployment pipeline.\u001B[0m"
+                script {
+                    currentBuild.displayName = "#${BUILD_NUMBER} - Skipped (Infra changes only)"
+                    currentBuild.description = "Changes were only in Kubernetes folders."
+                }
+            }
+        }
+
+        // --- STAGE: AUTO INCREMENT FROM DOCKER HUB ---
+        stage('Determine Auto-Increment Tag') {
+            when { expression { env.SKIP_DEPLOYMENT == 'false' } }
+            steps {
+                script {
+                    echo "Fetching latest tags from Docker Hub for ${DOCKER_HUB_REPO}..."
+                    
+                    def curlCmd = "curl -s 'https://registry.hub.docker.com/v2/repositories/${DOCKER_HUB_REPO}/tags/?page_size=10'"
+                    def response = sh(script: curlCmd, returnStdout: true).trim()
+                    
+                    // Filtering tags that match vX.X.X format and sorting them to find the latest
+                    def parseCmd = """echo '${response}' | grep -o '"name": *"[^"]*"' | cut -d'"' -f4 | grep -E '^v[0-9]+\\.[0-9]+\\.[0-9]+\$' | sort -V | tail -n1"""
+                    def latestTag = sh(script: parseCmd, returnStdout: true).trim()
+                    
+                    def nextTag = ""
+                    if (!latestTag || latestTag == "") {
+                        echo "No valid vX.X.X tags found. Starting fresh with v1.0.0"
+                        nextTag = "v1.0.0"
+                    } else {
+                        echo "Latest tag found on Docker Hub: ${latestTag}"
+                        def versionNum = latestTag.substring(1) 
+                        def parts = versionNum.split('\\.')
+                        
+                        def major = parts[0].toInteger()
+                        def minor = parts[1].toInteger()
+                        def patch = parts[2].toInteger()
+                        
+                        patch = patch + 1 // Increment κατά 1
+                        nextTag = "v${major}.${minor}.${patch}"
+                    }
+                    
+                    env.IMAGE_TAG = nextTag
+                    env.LATEST = 'true' 
+                    echo "Generated New Tag: ${env.IMAGE_TAG}"
+                }
+            }
+        }
+
+        stage('Build & Test') {
+            when { expression { env.SKIP_DEPLOYMENT == 'false' } }
+            steps {
+                sh './gradlew clean build --no-daemon'
+            }
+        }
+
+        stage('Build Docker Image') {
+            when { expression { env.SKIP_DEPLOYMENT == 'false' } }
+            steps {
+                retry(3) {
+                    script {
+                        sh "docker build -t ${DOCKER_HUB_REPO}:${env.IMAGE_TAG} ."
+                    }
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            when { expression { env.SKIP_DEPLOYMENT == 'false' } }
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: "${DOCKER_CRED_ID}",
+                    usernameVariable: 'DOCKER_HUB_USER',
+                    passwordVariable: 'DOCKER_HUB_PASSWORD'
+                )]) {
+                    retry(3) {
+                        sh '''
+                            echo "Attempting to push ${DOCKER_HUB_REPO}:${IMAGE_TAG}..."
+                            echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_USER" --password-stdin
+                            
+                            docker push ${DOCKER_HUB_REPO}:${IMAGE_TAG}
+
+                            if [ "$LATEST" = "true" ]; then
+                                docker tag ${DOCKER_HUB_REPO}:${IMAGE_TAG} ${DOCKER_HUB_REPO}:latest
+                                docker push ${DOCKER_HUB_REPO}:latest
+                            fi
+                            echo "✅ Push successful for ${DOCKER_HUB_REPO}:${IMAGE_TAG}"
+                        '''
+                        script {
+                            currentBuild.displayName = "#${BUILD_NUMBER} - Deployed ${env.IMAGE_TAG}"
+                            currentBuild.description = "Docker image ${DOCKER_HUB_REPO}:${env.IMAGE_TAG} pushed."
+                        }
+                    }
+                }
+            }
+        }
+
+        // --- ΝΕΟ STAGE: ΑΥΤΟΜΑΤΟ UPDATE ΣΤΟ GITHUB ΓΙΑ ΤΟ ARGOCD ---
+        stage('Update Kubernetes Manifests (GitOps)') {
+            when { expression { env.SKIP_DEPLOYMENT == 'false' } }
+            steps {
+                // Επαναχρησιμοποιούμε το ήδη υπάρχον Git Credential σου!
+                withCredentials([usernamePassword(credentialsId: "${GITHUB_CRED_ID}", usernameVariable: 'GH_USER', passwordVariable: 'GH_TOKEN')]) {
+                    script {
+                        // ΠΡΟΣΟΧΗ: Άλλαξε αυτά τα 2 αν τα manifests σου είναι σε άλλο repo!
+                        def gitUser = "RafMat98" 
+                        def repoName = "thesis_gitops_banking" 
+                        
+  
+                        def yamlPath = "apps/inquiry-backend/k8s/deployment.yaml" // Path for deployment.yaml
+                        
+                        echo "Cloning manifests branch/repo..."
+                        sh "git clone https://${GH_USER}:${GH_TOKEN}@github.com/${gitUser}/${repoName}.git k8s-repo"
+                        
+                        dir('k8s-repo') {
+                            sh 'git config user.name "Jenkins CI"'
+                            sh 'git config user.email "jenkins@ci.com"'
+                            
+                            echo "Modifying image tag in ${yamlPath} to ${env.IMAGE_TAG}..."
+
+                            sh "sed -i 's|image: ${DOCKER_HUB_REPO}:.*|image: ${DOCKER_HUB_REPO}:${env.IMAGE_TAG}|g' ${yamlPath}"
+                            
+                            def gitStatus = sh(script: "git status --porcelain", returnStdout: true).trim()
+                            if (gitStatus != "") {
+                                echo "Pushing updated manifest to GitHub..."
+                                sh "git add ${yamlPath}"
+                                sh "git commit -m 'chore(gitops): auto-release ${env.IMAGE_TAG} [skip ci]'"
+                                sh "git push origin main"
+                                echo "✅ GitHub Manifest updated! ArgoCD will catch it shortly."
+                            } else {
+                                echo "No changes detected in YAML. Skipping push."
+                            }
+                        }
+                        sh "rm -rf k8s-repo"
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            sh 'docker logout || true'
+            echo "Pipeline completed for tag: ${env.IMAGE_TAG}"
+            echo "Cleaning up local Docker images..."
+            sh """
+                docker rmi ${DOCKER_HUB_REPO}:${env.IMAGE_TAG} || true
+                docker rmi ${DOCKER_HUB_REPO}:latest || true
+            """
+        }
+    }
+}
