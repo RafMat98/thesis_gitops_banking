@@ -108,7 +108,6 @@ func sendEmail(msg EnrichedMessage, smtpHost string, smtpPort string, smtpUser s
 
 	return client.Quit()
 }
-
 func main() {
 
 	go func() {

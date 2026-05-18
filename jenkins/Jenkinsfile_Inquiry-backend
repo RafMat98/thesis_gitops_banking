@@ -2,13 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_HUB_REPO   = 'rmat98/java_backend'
-        GITHUB_CRED_ID    = 'Banking_thesis_Github_Repo'
-        GITHUB_BRANCH     = 'development'
-        GITHUB_APP_PATH   = 'apps/inquiry-backend/app'
-        DOCKER_CRED_ID    = 'Docker_hub'
-        KUBERNETES_PATH   = 'apps/inquiry-backend/k8s/deployment.yaml' // Path to Kubernetes manifests for inquiry-backend
-
+        
         DOCKER_HOST       = 'unix:///var/run/docker.sock'
         DOCKER_TLS_VERIFY = ''
         DOCKER_CERT_PATH  = ''
