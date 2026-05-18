@@ -4,7 +4,10 @@ pipeline {
     environment {
         DOCKER_HUB_REPO   = 'rmat98/java_backend'
         GITHUB_CRED_ID    = 'Banking_thesis_Github_Repo'
+        GITHUB_BRANCH     = 'development'
+        GITHUB_APP_PATH   = 'apps/inquiry-backend/app'
         DOCKER_CRED_ID    = 'Docker_hub'
+        KUBERNETES_PATH   = 'apps/inquiry-backend/k8s/deployment.yaml' // Path to Kubernetes manifests for inquiry-backend
 
         DOCKER_HOST       = 'unix:///var/run/docker.sock'
         DOCKER_TLS_VERIFY = ''
@@ -19,16 +22,20 @@ pipeline {
         stage('Pre-Check: Set Skip Flag') {
             steps {
                 script {
-                    def allChanges = currentBuild.changeSets*.items.flatten()
-                    def paths = allChanges.collectMany { it.affectedFiles*.path }
-                    
-                    // Check code changes only in app folder, ignoring k8s and other infra changes
-                    env.SKIP_DEPLOYMENT = paths.every { 
-                        it.startsWith('apps/inquiry-backend/app/') 
-                    } ? 'false' : 'true'
-
-                    echo "Skip deployment status set to: ${env.SKIP_DEPLOYMENT}"
+                        def allChanges = currentBuild.changeSets*.items.flatten()
+                        def paths = allChanges.collectMany { it.affectedFiles*.path }
+    
+                        if (paths.isEmpty()) {
+        
+                        env.SKIP_DEPLOYMENT = 'false'
+                        echo "No changesets found (Manual Build). Proceeding with deployment."
+                } else {
+        
+                        def appChanged = paths.any { it.startsWith("${GITHUB_APP_PATH}/") }
+                        env.SKIP_DEPLOYMENT = appChanged ? 'false' : 'true'
+                        echo "App code changes detected: ${appChanged}"
                 }
+                    echo "Skip deployment status set to: ${env.SKIP_DEPLOYMENT}"
             }
         }
 
@@ -39,7 +46,7 @@ pipeline {
                 retry(3) {
                     checkout([
                         $class: 'GitSCM',
-                        branches: [[name: 'origin/development']],
+                        branches: [[name: "${GITHUB_BRANCH}"]],
                         userRemoteConfigs: [[
                             url: 'https://github.com/RafMat98/thesis_gitops_banking.git',
                             credentialsId: "${GITHUB_CRED_ID}"
@@ -104,7 +111,7 @@ pipeline {
             steps {
                 retry(3) {
                     script {
-                        dir('apps/inquiry-backend/app') {  // 
+                        dir("${GITHUB_APP_PATH}") {  // 
                             sh "docker build -t ${DOCKER_HUB_REPO}:${env.IMAGE_TAG} ."
                         }
                     }
@@ -142,13 +149,13 @@ pipeline {
             }
         }
 
-        // --- ΝΕΟ STAGE: ΑΥΤΟΜΑΤΟ UPDATE ΣΤΟ GITHUB ΓΙΑ ΤΟ ARGOCD ---
+        // ---  STAGE:  UPDATE  GITHUB FOR ARGOCD ---
         stage('Update Kubernetes Manifests (GitOps)') {
             when { expression { env.SKIP_DEPLOYMENT == 'false' } }
             steps {
                 withCredentials([usernamePassword(credentialsId: "${GITHUB_CRED_ID}", usernameVariable: 'GH_USER', passwordVariable: 'GH_TOKEN')]) {
                     script {
-                        def yamlPath = "apps/inquiry-backend/k8s/deployment.yaml" // Path for deployment.yaml
+                        def yamlPath = "${KUBERNETES_PATH}" // Path for deployment.yaml
                         
 
                         sh 'git config user.name "Jenkins CI"'
@@ -166,7 +173,7 @@ pipeline {
                             sh "git commit -m 'chore(gitops): auto-release ${env.IMAGE_TAG}'"
                             
   
-                            sh "git push https://${GH_USER}:${GH_TOKEN}@github.com/RafMat98/thesis_gitops_banking.git HEAD:development"
+                            sh "git push https://${GH_USER}:${GH_TOKEN}@github.com/RafMat98/thesis_gitops_banking.git HEAD:${GITHUB_BRANCH}"
                             
                             echo "✅ GitHub Manifest updated! ArgoCD will catch it shortly."
                         } else {
