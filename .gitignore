@@ -6,3 +6,4 @@ certs/
 apps/inquiry-backend/src/main/resources/certs/
 application-dev.yaml
 secrets/
+CI_Phase/Jenkinsfile_mailer-service
