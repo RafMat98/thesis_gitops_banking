@@ -141,6 +141,7 @@ pipeline {
                         }
                     }
                 }
+            
             }
         }
 
@@ -148,6 +149,7 @@ pipeline {
         stage('Update Kubernetes Manifests (GitOps)') {
             when { expression { env.SKIP_DEPLOYMENT == 'false' } }
             steps {
+                lock('gitops-repo-lock'){
                 withCredentials([usernamePassword(credentialsId: "${GITHUB_CRED_ID}", usernameVariable: 'GH_USER', passwordVariable: 'GH_TOKEN')]) {
                     script {
                         def yamlPath = "${KUBERNETES_PATH}" // Path for deployment.yaml
@@ -156,7 +158,9 @@ pipeline {
                         sh 'git config user.name "Jenkins CI"'
                         sh 'git config user.email "jenkins@ci.com"'
                         
- 
+                        echo "Fetching latest changes from GitHub to prevent race conditions..."
+                        sh "git pull --rebase https://${GH_USER}:${GH_TOKEN}@github.com/RafMat98/thesis_gitops_banking.git ${GITHUB_BRANCH}"
+                        
                         echo "Modifying image tag in ${yamlPath} to ${env.IMAGE_TAG}..."
                         sh "sed -i 's|image: ${DOCKER_HUB_REPO}:.*|image: ${DOCKER_HUB_REPO}:${env.IMAGE_TAG}|g' ${yamlPath}"
                         
@@ -165,7 +169,7 @@ pipeline {
                         if (gitStatus != "") {
                             echo "Pushing updated manifest to GitHub..."
                             sh "git add ${yamlPath}"
-                            sh "git commit -m 'chore(gitops): auto-release ${env.IMAGE_TAG}'"
+                            sh "git commit -m 'chore(gitops): auto-release ${env.IMAGE_TAG} [skip ci]'"
                             
   
                             sh "git push https://${GH_USER}:${GH_TOKEN}@github.com/RafMat98/thesis_gitops_banking.git HEAD:${GITHUB_BRANCH}"
@@ -177,8 +181,9 @@ pipeline {
                     }
                 }
             }
-        }
+        }       
     }
+}
 
     post {
         always {
