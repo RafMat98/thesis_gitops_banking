@@ -38,6 +38,7 @@ pipeline {
                     echo "Skip deployment status set to: ${env.SKIP_DEPLOYMENT}"
             }
         }
+    }
 
         stage('Checkout Code') {
             when { expression { env.SKIP_DEPLOYMENT == 'false' } }
@@ -194,8 +195,8 @@ pipeline {
                 docker rmi ${DOCKER_HUB_REPO}:${env.IMAGE_TAG} || true
                 docker rmi ${DOCKER_HUB_REPO}:latest || true
             """
+            }
         }
     }
-}
 
 
