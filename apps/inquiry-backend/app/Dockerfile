@@ -7,7 +7,6 @@ RUN mvn clean package -DskipTests
 # Stage 2: Runtime image
 FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
-
 # Create non-root user for security (Kubernetes Security Best Practices)
 RUN adduser --system --group spring
 USER spring
