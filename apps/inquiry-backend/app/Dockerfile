@@ -12,7 +12,7 @@ WORKDIR /app
 RUN adduser --system --group spring
 USER spring
 
-# Copy the jar file from the Stage 1 to the runtime image
+# Copy the jar file from the Stage 1 to the runtime image-
 COPY --from=build /app/target/*.jar app.jar
 
 EXPOSE 8080
