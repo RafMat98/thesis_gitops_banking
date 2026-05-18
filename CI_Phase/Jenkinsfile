@@ -12,32 +12,9 @@ pipeline {
         githubPush()
     }
 
-    stages {
-        stage('Pre-Check: Set Skip Flag') {
+    stage('Checkout Code') {
             steps {
-                script {
-                        def allChanges = currentBuild.changeSets*.items.flatten()
-                        def paths = allChanges.collectMany { it.affectedFiles*.path }
-    
-                        if (paths.isEmpty()) {
-        
-                        env.SKIP_DEPLOYMENT = 'false'
-                        echo "No changesets found (Manual Build). Proceeding with deployment."
-                } else {
-        
-                        def appChanged = paths.any { it.startsWith("${GITHUB_APP_PATH}/") }
-                        env.SKIP_DEPLOYMENT = appChanged ? 'false' : 'true'
-                        echo "App code changes detected: ${appChanged}"
-                }
-                    echo "Skip deployment status set to: ${env.SKIP_DEPLOYMENT}"
-            }
-        }
-    }
-
-        stage('Checkout Code') {
-            when { expression { env.SKIP_DEPLOYMENT == 'false' } }
-            steps {
-                echo "Relevant application code changes detected — proceeding with checkout..."
+                echo "Checking out code to analyze changes..."
                 retry(3) {
                     checkout([
                         $class: 'GitSCM',
@@ -47,6 +24,33 @@ pipeline {
                             credentialsId: "${GITHUB_CRED_ID}"
                         ]]
                     ])
+                }
+            }
+        }
+
+        stage('Pre-Check: Set Skip Flag') {
+            steps {
+                script {
+                    def allChanges = currentBuild.changeSets*.items.flatten()
+                    def paths = allChanges.collectMany { it.affectedFiles*.path }
+                    
+                    def lastCommitMsg = sh(script: "git log -1 --pretty=%B", returnStdout: true).trim()
+                    
+                    if (lastCommitMsg.contains('[skip ci]')) {
+                        env.SKIP_DEPLOYMENT = 'true'
+                        echo "GitOps automated commit detected via [skip ci]. Stopping the loop."
+                    } 
+                    else if (paths.isEmpty()) {
+                        env.SKIP_DEPLOYMENT = 'false'
+                        echo "No changesets found (Manual Build). Proceeding with deployment."
+                    } 
+                    else {
+                        def appChanged = paths.any { it.startsWith("${GITHUB_APP_PATH}/") }
+                        env.SKIP_DEPLOYMENT = appChanged ? 'false' : 'true'
+                        echo "App code changes detected: ${appChanged}"
+                    }
+                    
+                    echo "Skip deployment status set to: ${env.SKIP_DEPLOYMENT}"
                 }
             }
         }
