@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: profile-service
-          image: rmat98/go-profile-service:v1.0.9
+          image: rmat98/go-profile-service:v1.0.10
           imagePullPolicy: Always
           env:
             - name: REDIS_ADDR
