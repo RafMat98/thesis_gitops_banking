@@ -16,5 +16,6 @@ USER spring
 COPY --from=build /app/target/*.jar app.jar
 
 EXPOSE 8080
+
 # Use ENTRYPOINT to run the application, allowing for better signal handling and compatibility with Kubernetes
 ENTRYPOINT ["java", "-jar", "app.jar"]
