@@ -1,16 +1,16 @@
 pipeline {
     agent any
-
+    
     environment {
         
         DOCKER_HOST       = 'unix:///var/run/docker.sock'
         DOCKER_TLS_VERIFY = ''
         DOCKER_CERT_PATH  = ''
     }
-    
-    triggers {
-        githubPush()
-    }
+    stages {
+        triggers {
+            githubPush()
+        }
 
     stage('Checkout Code') {
             steps {
