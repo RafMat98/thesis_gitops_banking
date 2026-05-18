@@ -55,7 +55,6 @@ func main() {
 		fmt.Printf("Failed to create consumer: %v\n", err)
 		os.Exit(1)
 	}
-
 	// 3. Kafka Producer
 	producer, err := kafka.NewProducer(&kafka.ConfigMap{
 		"bootstrap.servers":                   kafkaBrokers,
