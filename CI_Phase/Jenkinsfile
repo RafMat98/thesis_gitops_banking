@@ -1,43 +1,30 @@
 pipeline {
     agent any
-    
+
     environment {
         
         DOCKER_HOST       = 'unix:///var/run/docker.sock'
         DOCKER_TLS_VERIFY = ''
         DOCKER_CERT_PATH  = ''
     }
-        triggers {
-            githubPush()
-        }
-    stages {
-        stage('Checkout Code') {
-            steps {
-                echo "Checking out code to analyze changes..."
-                retry(3) {
-                    checkout([
-                        $class: 'GitSCM',
-                        branches: [[name: "${GITHUB_BRANCH}"]],
-                        userRemoteConfigs: [[
-                            url: 'https://github.com/RafMat98/thesis_gitops_banking.git',
-                            credentialsId: "${GITHUB_CRED_ID}"
-                        ]]
-                    ])
-                }
-            }
-        }
+    
+    triggers {
+        githubPush()
+    }
 
+    stages {
         stage('Pre-Check: Set Skip Flag') {
             steps {
                 script {
+                    def lastCommitMsg = sh(script: "git log -1 --pretty=%B", returnStdout: true).trim()
                     def allChanges = currentBuild.changeSets*.items.flatten()
                     def paths = allChanges.collectMany { it.affectedFiles*.path }
                     
-                    def lastCommitMsg = sh(script: "git log -1 --pretty=%B", returnStdout: true).trim()
+                    def isJenkinsCommit = allChanges.any { it.author.fullName == 'Jenkins CI' || it.msg.contains('[skip ci]') }
                     
-                    if (lastCommitMsg.contains('[skip ci]')) {
+                    if (lastCommitMsg.contains('[skip ci]') || isJenkinsCommit) {
                         env.SKIP_DEPLOYMENT = 'true'
-                        echo "GitOps automated commit detected via [skip ci]. Stopping the loop."
+                        echo "GitOps automated commit detected. Stopping the loop."
                     } 
                     else if (paths.isEmpty()) {
                         env.SKIP_DEPLOYMENT = 'false'

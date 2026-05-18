@@ -40,6 +40,7 @@ func main() {
 		Password: redisPass,
 		DB:       0,
 	})
+
 	// 2. Kafka Consumer (mTLS)
 	consumer, err := kafka.NewConsumer(&kafka.ConfigMap{
 		"bootstrap.servers":                   kafkaBrokers,
