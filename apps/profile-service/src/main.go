@@ -29,6 +29,7 @@ type EnrichedResponse struct {
 var ctx = context.Background()
 
 func main() {
+
 	// --- Reading settings from Environment ----
 	redisAddr := os.Getenv("REDIS_ADDR")
 	redisPass := os.Getenv("REDIS_PASSWORD")

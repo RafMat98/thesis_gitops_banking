@@ -117,6 +117,7 @@ func main() {
 			fmt.Printf("Metrics server failed to start: %v\n", err)
 		}
 	}()
+
 	// --- Processing delay (used to simulate heavy workload and trigger KEDA scaling) ----
 	delayStr := os.Getenv("PROCESSING_DELAY_MS")
 	delayMs, err := strconv.Atoi(delayStr)

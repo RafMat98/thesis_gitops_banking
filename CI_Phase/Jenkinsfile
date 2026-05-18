@@ -17,23 +17,30 @@ pipeline {
             steps {
                 script {
                     def lastCommitMsg = sh(script: "git log -1 --pretty=%B", returnStdout: true).trim()
-                    def allChanges = currentBuild.changeSets*.items.flatten()
-                    def paths = allChanges.collectMany { it.affectedFiles*.path }
+                    def lastCommitAuthor = sh(script: "git log -1 --pretty=%an", returnStdout: true).trim()
                     
-                    def isJenkinsCommit = allChanges.any { it.author.fullName == 'Jenkins CI' || it.msg.contains('[skip ci]') }
-                    
-                    if (lastCommitMsg.contains('[skip ci]') || isJenkinsCommit) {
+                    echo "DEBUG - Last Commit Message: ${lastCommitMsg}"
+                    echo "DEBUG - Last Commit Author: ${lastCommitAuthor}"
+
+                    if (lastCommitAuthor == 'Jenkins CI' || lastCommitMsg.contains('[skip ci]')) {
+                        
                         env.SKIP_DEPLOYMENT = 'true'
-                        echo "GitOps automated commit detected. Stopping the loop."
-                    } 
-                    else if (paths.isEmpty()) {
-                        env.SKIP_DEPLOYMENT = 'false'
-                        echo "No changesets found (Manual Build). Proceeding with deployment."
-                    } 
-                    else {
-                        def appChanged = paths.any { it.startsWith("${GITHUB_APP_PATH}/") }
-                        env.SKIP_DEPLOYMENT = appChanged ? 'false' : 'true'
-                        echo "App code changes detected: ${appChanged}"
+                        echo "GitOps automated commit detected (Author: ${lastCommitAuthor}). Stopping the loop."
+                        
+                    } else {
+                        def allChanges = currentBuild.changeSets*.items.flatten()
+                        def paths = allChanges.collectMany { it.affectedFiles*.path }
+                        
+                        echo "DEBUG - Files changed in accumulated changesets: ${paths}"
+                        
+                        if (paths.isEmpty()) {
+                            env.SKIP_DEPLOYMENT = 'false'
+                            echo "No changesets found (Manual Build). Proceeding with deployment."
+                        } else {
+                            def appChanged = paths.any { it.startsWith("${GITHUB_APP_PATH}/") }
+                            env.SKIP_DEPLOYMENT = appChanged ? 'false' : 'true'
+                            echo "App code changes detected: ${appChanged}"
+                        }
                     }
                     
                     echo "Skip deployment status set to: ${env.SKIP_DEPLOYMENT}"
