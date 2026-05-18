@@ -155,7 +155,7 @@ pipeline {
                         def yamlPath = "${KUBERNETES_PATH}" // Path for deployment.yaml
                         
 
-                        sh 'git config user.name "Jenkins CI"'
+                        sh 'git config user.name "Jenkins_CI"'
                         sh 'git config user.email "jenkins@ci.com"'
                         
                         echo "Fetching latest changes from GitHub to prevent race conditions..."
