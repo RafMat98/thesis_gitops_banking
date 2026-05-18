@@ -7,12 +7,11 @@ pipeline {
         DOCKER_TLS_VERIFY = ''
         DOCKER_CERT_PATH  = ''
     }
-    stages {
         triggers {
             githubPush()
         }
-
-    stage('Checkout Code') {
+    stages {
+        stage('Checkout Code') {
             steps {
                 echo "Checking out code to analyze changes..."
                 retry(3) {
