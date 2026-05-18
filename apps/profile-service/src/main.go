@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"os" // For environment variables
-	"time"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/redis/go-redis/v9"
@@ -34,23 +34,21 @@ func main() {
 	redisPass := os.Getenv("REDIS_PASSWORD")
 	kafkaBrokers := os.Getenv("KAFKA_BROKERS")
 
-
 	// 1. Connection to Redis
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     redisAddr,
 		Password: redisPass,
 		DB:       0,
 	})
-
 	// 2. Kafka Consumer (mTLS)
 	consumer, err := kafka.NewConsumer(&kafka.ConfigMap{
-		"bootstrap.servers":        kafkaBrokers,
-		"group.id":                 "go-microservice-group",
-		"security.protocol":        "SSL",
-		"ssl.ca.location":          "/app/certs/ca.crt",
-		"ssl.certificate.location": "/app/certs/user.crt",
-		"ssl.key.location":         "/app/certs/user.key",
-		"auto.offset.reset":        "earliest", 
+		"bootstrap.servers":                   kafkaBrokers,
+		"group.id":                            "go-microservice-group",
+		"security.protocol":                   "SSL",
+		"ssl.ca.location":                     "/app/certs/ca.crt",
+		"ssl.certificate.location":            "/app/certs/user.crt",
+		"ssl.key.location":                    "/app/certs/user.key",
+		"auto.offset.reset":                   "earliest",
 		"enable.ssl.certificate.verification": false,
 	})
 	if err != nil {
@@ -60,11 +58,11 @@ func main() {
 
 	// 3. Kafka Producer
 	producer, err := kafka.NewProducer(&kafka.ConfigMap{
-		"bootstrap.servers":        kafkaBrokers,
-		"security.protocol":        "SSL",
-		"ssl.ca.location":          "/app/certs/ca.crt",
-		"ssl.certificate.location": "/app/certs/user.crt",
-		"ssl.key.location":         "/app/certs/user.key",
+		"bootstrap.servers":                   kafkaBrokers,
+		"security.protocol":                   "SSL",
+		"ssl.ca.location":                     "/app/certs/ca.crt",
+		"ssl.certificate.location":            "/app/certs/user.crt",
+		"ssl.key.location":                    "/app/certs/user.key",
 		"enable.ssl.certificate.verification": false,
 	})
 	if err != nil {
@@ -80,44 +78,44 @@ func main() {
 
 	for {
 		msg, err := consumer.ReadMessage(-1)
-    if err == nil {
-        rawStr := string(msg.Value)
-        fmt.Printf("Raw received: %s\n", rawStr)
+		if err == nil {
+			rawStr := string(msg.Value)
+			fmt.Printf("Raw received: %s\n", rawStr)
 
-        // 1. Split strings to char '+'
-        parts := strings.Split(rawStr, "+")
-        if len(parts) < 2 {
-            fmt.Printf("Invalid message format: %s\n", rawStr)
-            continue
-        }
+			// 1. Split strings to char '+'
+			parts := strings.Split(rawStr, "+")
+			if len(parts) < 2 {
+				fmt.Printf("Invalid message format: %s\n", rawStr)
+				continue
+			}
 
-        accID := parts[0]
-        balStr := parts[1]
+			accID := parts[0]
+			balStr := parts[1]
 
-        // 2. Transform balance string to float64
-        balance, err := strconv.ParseFloat(balStr, 64)
-        if err != nil {
-            fmt.Printf("Error parsing balance: %v\n", err)
-            continue
-        }
+			// 2. Transform balance string to float64
+			balance, err := strconv.ParseFloat(balStr, 64)
+			if err != nil {
+				fmt.Printf("Error parsing balance: %v\n", err)
+				continue
+			}
 
-        // 3. Create the struct for Redis lookup
-        raw := BalanceResponse{
-            AccountID: accID,
-            Balance:   balance,
-        }
+			// 3. Create the struct for Redis lookup
+			raw := BalanceResponse{
+				AccountID: accID,
+				Balance:   balance,
+			}
 
-        // 4. Enriching with Redis data
-        customerName, _ := rdb.Get(ctx, raw.AccountID+":name").Result()
-        customerEmail, _ := rdb.Get(ctx, raw.AccountID+":email").Result()
+			// 4. Enriching with Redis data
+			customerName, _ := rdb.Get(ctx, raw.AccountID+":name").Result()
+			customerEmail, _ := rdb.Get(ctx, raw.AccountID+":email").Result()
 
-        enriched := EnrichedResponse{
-            AccountID:    raw.AccountID,
-            Balance:      raw.Balance,
-            CustomerName: customerName,
-            Email:        customerEmail,
-            ProcessedAt:  time.Now().Format(time.RFC3339),
-        }
+			enriched := EnrichedResponse{
+				AccountID:    raw.AccountID,
+				Balance:      raw.Balance,
+				CustomerName: customerName,
+				Email:        customerEmail,
+				ProcessedAt:  time.Now().Format(time.RFC3339),
+			}
 
 			payload, _ := json.Marshal(enriched)
 
