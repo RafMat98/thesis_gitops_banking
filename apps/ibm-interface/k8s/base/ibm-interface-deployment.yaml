@@ -72,7 +72,7 @@ spec:
 
           volumeMounts:
             - name: kafka-certs
-              mountPath: /app/cobol_certs
+              mountPath: /home/bankuser/app/cobol_certs
               readOnly: true
       volumes:
         - name: kafka-certs
