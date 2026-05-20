@@ -80,7 +80,7 @@ func main() {
 		msg, err := consumer.ReadMessage(-1)
 		if err == nil {
 			rawStr := string(msg.Value)
-			fmt.Printf("Raw received: %s\n", rawStr)
+			//fmt.Printf("Raw received: %s\n", rawStr)
 
 			// 1. Split strings to char '+'
 			parts := strings.Split(rawStr, "+")
