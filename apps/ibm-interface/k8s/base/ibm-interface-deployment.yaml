@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ibm-interface
+  namespace: banking-apps
+  labels:
+    app: ibm-interface
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ibm-interface
+  template:
+    metadata:
+      labels:
+        app: ibm-interface
+    spec:
+      containers:
+        - name: ibm-interface
+          image: rmat98/ibmi-api:v1.0.0
+          imagePullPolicy: Always
+          env:
+            - name: KAFKA_BROKERS
+              valueFrom:
+                secretKeyRef:
+                  name: kafka-broker
+                  key: kafka-broker
+            - name: CONSUME_TOPIC
+              valueFrom:
+                secretKeyRef:
+                  name: ibm-interface-secret
+                  key: consume-topic
+            - name: PRODUCE_TOPIC
+              valueFrom:
+                secretKeyRef:
+                  name: ibm-interface-secret
+                  key: produce-topic
+            - name: GROUP_ID
+              valueFrom:
+                secretKeyRef:
+                  name: ibm-interface-secret
+                  key: group-id
+            - name: SSH_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: ibm-interface-secret
+                  key: ssh-host
+            - name: SSH_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: ibm-interface-secret
+                  key: ssh-port
+            - name: SSH_USER
+              valueFrom:
+                secretKeyRef:
+                  name: ibm-interface-secret
+                  key: ssh-username
+            - name: SSH_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: ibm-interface-secret
+                  key: ssh-password
+          # --- Adding resource requests and limits for better scheduling and stability ---
+          resources:
+            requests:
+              cpu: "50m" # 1/20 of a CPU core (for normal operation)
+              memory: "64Mi" # 64 MB RAM
+            limits:
+              cpu: "200m" # 1/5 of a CPU core (for spikes when reading many messages)
+              memory: "128Mi" # 128 MB RAM (Hard limit, if it exceeds this it will be killed)
+          # --------------------------
+
+          volumeMounts:
+            - name: kafka-certs
+              mountPath: /app/certs
+              readOnly: true
+      volumes:
+        - name: kafka-certs
+          secret:
+            secretName: go-mailer-user

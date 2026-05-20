@@ -1,0 +1,22 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: ibm-interface-scaledobject
+  namespace: banking-apps
+spec:
+  scaleTargetRef:
+    name: ibm-interface
+  minReplicaCount: 0
+  maxReplicaCount: 4
+  cooldownPeriod: 60
+  triggers:
+    - type: kafka
+      metadata:
+        bootstrapServers: main-cluster-kafka-bootstrap.infra-system.svc.cluster.local:9093 # Port 9093
+        topic: profile-updates
+        consumerGroup: cobol-backend-group
+        lagThreshold: "5"
+        authMode: tls
+        tls: enable
+      authenticationRef:
+        name: keda-kafka-auth

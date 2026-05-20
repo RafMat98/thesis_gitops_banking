@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ibm-interface
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: "https://github.com/RafMat98/thesis_gitops_banking.git"
+    targetRevision: development
+    path: apps/ibm-interface/k8s/overlays/keda
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: banking-apps
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      name: ibm-interface
+      jsonPointers:
+        - /spec/replicas
