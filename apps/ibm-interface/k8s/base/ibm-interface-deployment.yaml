@@ -72,9 +72,9 @@ spec:
 
           volumeMounts:
             - name: kafka-certs
-              mountPath: /app/certs
+              mountPath: /app/cobol_certs
               readOnly: true
       volumes:
         - name: kafka-certs
           secret:
-            secretName: go-mailer-user
+            secretName: cobol-backend-user
