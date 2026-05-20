@@ -13,7 +13,7 @@ spec:
     - type: kafka
       metadata:
         bootstrapServers: main-cluster-kafka-bootstrap.infra-system.svc.cluster.local:9093 # Port 9093
-        topic: profile-updates
+        topic: balance-requests
         consumerGroup: cobol-backend-group
         lagThreshold: "5"
         authMode: tls
