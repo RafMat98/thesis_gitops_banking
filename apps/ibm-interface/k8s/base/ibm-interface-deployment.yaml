@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: ibm-interface
-          image: rmat98/ibmi-api:v1.0.0
+          image: rmat98/ibmi-api:v1.0.1
           imagePullPolicy: Always
           env:
             - name: KAFKA_BROKER
@@ -71,10 +71,16 @@ spec:
           # --------------------------
 
           volumeMounts:
-            - name: kafka-certs
+            - name: kafka-certs-volume
               mountPath: /home/bankuser/app/cobol_certs
               readOnly: true
+            - name: cluster-ca-volume
+              mountPath: /home/bankuser/app/cluster_certs
+              readOnly: true
       volumes:
-        - name: kafka-certs
+        - name: kafka-certs-volume
           secret:
             secretName: cobol-backend-user
+        - name: cluster-ca-volume
+          secret:
+            secretName: main-cluster-cluster-ca-cert
