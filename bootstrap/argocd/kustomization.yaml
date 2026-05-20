@@ -13,3 +13,4 @@ resources:
   - mailer-service.yaml
   - monitoring-app.yaml
   - banking-monitoring-config.yaml
+  - ibm-interface.yaml
