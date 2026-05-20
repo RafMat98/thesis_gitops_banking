@@ -1,7 +1,7 @@
 apiVersion: keda.sh/v1alpha1
 kind: TriggerAuthentication
 metadata:
-  name: keda-kafka-auth
+  name: keda-kafka-auth-ibm-interface
   namespace: banking-apps
 spec:
   secretTargetRef:

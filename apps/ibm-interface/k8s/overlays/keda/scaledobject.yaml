@@ -19,4 +19,4 @@ spec:
         authMode: tls
         tls: enable
       authenticationRef:
-        name: keda-kafka-auth
+        name: keda-kafka-auth-ibm-interface
