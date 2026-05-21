@@ -21,14 +21,22 @@ spec:
           imagePullPolicy: Always
           env:
             - name: REDIS_ADDR
-              value: "redis.infra-system.svc.cluster.local:6379"
+              valueFrom:
+                secretKeyRef:
+                  name: redis-auth
+                  key: address
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: redis-auth
                   key: password
+            - name: KAFKA_GROUP_ID
+              value: "go-microservice-group"
             - name: KAFKA_BROKERS
-              value: "main-cluster-kafka-bootstrap.infra-system.svc.cluster.local:9093"
+              valueFrom:
+                secretKeyRef:
+                  name: kafka-broker
+                  key: kafka-broker
 
           # --- Adding resource requests and limits for better scheduling and stability ---
           resources:

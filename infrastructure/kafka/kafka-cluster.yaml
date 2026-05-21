@@ -9,7 +9,7 @@ spec:
   kafka:
     version: 4.2.0
     metadataVersion: "4.2-IV0"
-
+    #  # --- Using reflector annotations to allow secure sharing of the cluster CA certificate with the banking-apps namespace ---
     template:
       clusterCaCert:
         metadata:
@@ -17,20 +17,13 @@ spec:
             reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
             reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces: "banking-apps"
             reflector.v1.k8s.emberstack.com/reflection-auto-enabled: "true"
-
     listeners:
-      - name: plain
-        port: 9092
-        type: internal
-        tls: false # No TLS for this listener, using for development and testing
-
       - name: tls
         port: 9093
         type: internal
         tls: true
         authentication:
           type: tls # mTLS Authentication
-
       # For COBOL simulation communication
       - name: external
         port: 9094

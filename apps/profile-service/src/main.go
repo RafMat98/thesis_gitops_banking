@@ -34,6 +34,7 @@ func main() {
 	redisAddr := os.Getenv("REDIS_ADDR")
 	redisPass := os.Getenv("REDIS_PASSWORD")
 	kafkaBrokers := os.Getenv("KAFKA_BROKERS")
+	groupid := os.Getenv("KAFKA_GROUP_ID")
 
 	// 1. Connection to Redis
 	rdb := redis.NewClient(&redis.Options{
@@ -44,7 +45,7 @@ func main() {
 	// 2. Kafka Consumer (mTLS)
 	consumer, err := kafka.NewConsumer(&kafka.ConfigMap{
 		"bootstrap.servers":                   kafkaBrokers,
-		"group.id":                            "go-microservice-group",
+		"group.id":                            groupid,
 		"security.protocol":                   "SSL",
 		"ssl.ca.location":                     "/app/certs/ca.crt",
 		"ssl.certificate.location":            "/app/certs/user.crt",

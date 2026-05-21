@@ -3,4 +3,3 @@ kind: Kustomization
 
 resources:
   - ibm-interface-deployment.yaml
-  - service.yaml
