@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: mailer-service
-          image: rmat98/go-mailer-service:v1.0.4
+          image: rmat98/go-mailer-service:v1.0.5
           imagePullPolicy: Always
           env:
             - name: SMTP_HOST
