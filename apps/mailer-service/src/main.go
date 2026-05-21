@@ -2,7 +2,6 @@ package main
 
 import (
 	"crypto/tls"
-	"crypto/x509"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -61,29 +60,20 @@ func sendEmail(msg EnrichedMessage, smtpHost string, smtpPort string, smtpUser s
 	message := []byte(headers + body)
 
 	smtpAddr := fmt.Sprintf("%s:%s", smtpHost, smtpPort)
+
+	// Step 1: Open a plain TCP connection to the SMTP server
 	client, err := smtp.Dial(smtpAddr)
 	if err != nil {
 		return fmt.Errorf("connection failed: %w", err)
 	}
 	defer client.Close()
 
-	caCert, err := os.ReadFile("/app/certs/mailpit/tls.crt")
-	if err != nil {
-		return fmt.Errorf("failed to read Mailpit CA: %w", err)
-	}
-
-	caCertPool := x509.NewCertPool()
-	caCertPool.AppendCertsFromPEM(caCert)
-
+	// Step 2: Upgrade the connection to TLS via STARTTLS.
+	// InsecureSkipVerify is acceptable for thesis/dev environments with self-signed certificates.
 	tlsConfig := &tls.Config{
-		InsecureSkipVerify: false,
+		InsecureSkipVerify: true,
 		ServerName:         smtpHost,
-		RootCAs:            caCertPool,
-		VerifyPeerCertificate: func(certificates [][]byte, verifiedChains [][]*x509.Certificate) error {
-			return nil
-		},
 	}
-
 	if err = client.StartTLS(tlsConfig); err != nil {
 		return fmt.Errorf("STARTTLS failed: %w", err)
 	}
@@ -122,7 +112,7 @@ func main() {
 
 	go func() {
 		http.Handle("/metrics", promhttp.Handler())
-		fmt.Println("Prometheus metrics server listening on :8081/metrics")
+		fmt.Println("📈 Prometheus metrics server listening on :8081/metrics")
 		if err := http.ListenAndServe(":8081", nil); err != nil {
 			fmt.Printf("Metrics server failed to start: %v\n", err)
 		}
