@@ -79,7 +79,9 @@ func sendEmail(msg EnrichedMessage, smtpHost string, smtpPort string, smtpUser s
 		InsecureSkipVerify: false,
 		ServerName:         smtpHost,
 		RootCAs:            caCertPool,
-		InsecureModuleVerification: true // This is needed to bypass certificate
+		VerifyPeerCertificate: func(certificates [][]byte, verifiedChains [][]*x509.Certificate) error {
+			return nil
+		},
 	}
 
 	if err = client.StartTLS(tlsConfig); err != nil {
