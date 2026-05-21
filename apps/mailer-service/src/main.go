@@ -61,6 +61,11 @@ func sendEmail(msg EnrichedMessage, smtpHost string, smtpPort string, smtpUser s
 	message := []byte(headers + body)
 
 	smtpAddr := fmt.Sprintf("%s:%s", smtpHost, smtpPort)
+	client, err := smtp.Dial(smtpAddr)
+	if err != nil {
+		return fmt.Errorf("connection failed: %w", err)
+	}
+	defer client.Close()
 
 	caCert, err := os.ReadFile("/app/certs/mailpit/tls.crt")
 	if err != nil {
@@ -114,7 +119,7 @@ func main() {
 
 	go func() {
 		http.Handle("/metrics", promhttp.Handler())
-		fmt.Println("📈 Prometheus metrics server listening on :8081/metrics")
+		fmt.Println("Prometheus metrics server listening on :8081/metrics")
 		if err := http.ListenAndServe(":8081", nil); err != nil {
 			fmt.Printf("Metrics server failed to start: %v\n", err)
 		}
