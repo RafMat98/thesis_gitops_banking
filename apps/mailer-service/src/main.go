@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -13,7 +14,7 @@ import (
 	"time"
 
 	"github.com/confluentinc/confluent-kafka-go/kafka"
-	// ◄ Προστέθηκαν τα πακέτα του Prometheus
+	// For metrics and monitoring
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
@@ -61,19 +62,20 @@ func sendEmail(msg EnrichedMessage, smtpHost string, smtpPort string, smtpUser s
 
 	smtpAddr := fmt.Sprintf("%s:%s", smtpHost, smtpPort)
 
-	// Step 1: Open a plain TCP connection to the SMTP server
-	client, err := smtp.Dial(smtpAddr)
+	caCert, err := os.ReadFile("/app/certs/mailpit/tls.crt")
 	if err != nil {
-		return fmt.Errorf("connection failed: %w", err)
+		return fmt.Errorf("failed to read Mailpit CA: %w", err)
 	}
-	defer client.Close()
 
-	// Step 2: Upgrade the connection to TLS via STARTTLS.
-	// InsecureSkipVerify is acceptable for thesis/dev environments with self-signed certificates.
+	caCertPool := x509.NewCertPool()
+	caCertPool.AppendCertsFromPEM(caCert)
+
 	tlsConfig := &tls.Config{
-		InsecureSkipVerify: true,
+		InsecureSkipVerify: false,
 		ServerName:         smtpHost,
+		RootCAs:            caCertPool,
 	}
+
 	if err = client.StartTLS(tlsConfig); err != nil {
 		return fmt.Errorf("STARTTLS failed: %w", err)
 	}

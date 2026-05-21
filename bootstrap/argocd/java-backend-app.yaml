@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: "https://github.com/RafMat98/thesis_gitops_banking.git"
     targetRevision: development
-    path: apps/inquiry-backend/k8s
+    path: apps/inquiry-backend/k8s/overlays/talos
   destination:
     server: "https://kubernetes.default.svc"
     namespace: banking-apps

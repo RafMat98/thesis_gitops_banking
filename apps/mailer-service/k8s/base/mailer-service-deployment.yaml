@@ -60,7 +60,13 @@ spec:
             - name: kafka-certs
               mountPath: /app/certs
               readOnly: true
+            - name: mailpit-cert-volume
+              mountPath: /app/certs/mailpit
+              readOnly: true
       volumes:
         - name: kafka-certs
           secret:
             secretName: go-mailer-user
+        - name: mailpit-cert-volume
+          secret:
+            secretName: mailpit-tls-secret
