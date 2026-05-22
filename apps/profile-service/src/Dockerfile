@@ -14,7 +14,7 @@ COPY main.go .
 # 3. Automatic creation of go.mod and downloading of libraries inside the Docker
 RUN go mod init profile-service && go mod tidy
 
-# 4. Compile του Binary (με CGO_ENABLED=1 για τον Kafka)
+# 4. Compile του Binary (με CGO_ENABLED=1 for Kafka)
 RUN CGO_ENABLED=1 GOOS=linux go build -o profile-service .
 
 # --- stage 2: Runtime Image (Only the compiled binary and the necessary libraries) ---

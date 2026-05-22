@@ -10,4 +10,6 @@ CI_Phase/Jenkinsfile_mailer-service
 *.auto.tfvars
 .terraform/
 *.tfstate
-*.tfstate.backup
+*.tfstate.*
+*.tfvars
+*.tfvars.json
