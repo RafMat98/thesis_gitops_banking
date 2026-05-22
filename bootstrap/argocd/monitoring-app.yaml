@@ -50,7 +50,6 @@ spec:
             storageSpec:
               volumeClaimTemplate:
                 spec:
-                  storageClassName: proxmox-nvme
                   accessModes: ["ReadWriteOnce"]
                   resources:
                     requests:
