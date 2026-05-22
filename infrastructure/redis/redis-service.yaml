@@ -4,11 +4,10 @@ metadata:
   name: redis
   namespace: infra-system
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
     - port: 6379
       targetPort: 6379
-      nodePort: 30080
   selector:
     app: redis
 ---
@@ -18,10 +17,9 @@ metadata:
   name: redis-insight
   namespace: infra-system
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
     - port: 80
       targetPort: 5540
-      nodePort: 30079
   selector:
     app: redis-insight
