@@ -3,6 +3,7 @@ kind: Deployment
 metadata:
   name: inquiry-backend
   namespace: banking-apps
+
 spec:
   replicas: 1
   selector:

@@ -24,7 +24,7 @@ spec:
               memory: "128Mi"
               cpu: "100m"
             limits:
-              memory: "192Mi" # ← λίγο πάνω από maxmemory
+              memory: "192Mi"
               cpu: "300m"
           env:
             - name: REDIS_PASSWORD
@@ -34,7 +34,7 @@ spec:
                   key: password
 
 ---
-# --- REDIS INSIGHT (Το UI) ---
+# --- REDIS INSIGHT (UI) ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:

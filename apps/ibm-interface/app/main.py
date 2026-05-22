@@ -57,7 +57,7 @@ def get_ssh_client() -> paramiko.SSHClient:
             ssh_client = create_ssh_client()
     return ssh_client
 
-# --- ΛΟΓΙΚΗ ΕΚΤΕΛΕΣΗΣ (SSH COBOL) ---
+# --- SSH COBOL ---
 def run_cobol_ssh(account_id: str):
     client = get_ssh_client()
     cmd = f"/usr/bin/qsh -c \"system \\\"CALL PGM(RMAT981/READER) PARM('{account_id}')\\\" 2>&1\""
@@ -102,7 +102,6 @@ async def kafka_consumer_loop():
             await asyncio.sleep(5)
 
     try:
-        # Η κύρια λούπα που ακούει για μηνύματα
         async for msg in consumer:
             try:
                 account_id = msg.value.decode('utf-8')
@@ -115,23 +114,22 @@ async def kafka_consumer_loop():
                 final_message = f"{account_id}+{balance}"
                 final_log = {
                     "account_id": account_id,
-                    "balance": "********",  # Hide actual balance in logs for security,
+                    "balance": "********",  
                     "status": "PROCESSED"
                 }
                 await producer.send_and_wait(PRODUCE_TOPIC, final_message.encode('utf-8'))
                 print(f" [KAFKA OUT] Published: {final_log}")
 
             except Exception as e:
-                # Αν σκάσει ΕΝΑ μήνυμα, το πιάνουμε εδώ για να ΜΗΝ σταματήσει η λούπα
+                # if any error occurs, we log the error and the original message for debugging
                 print(f" [ERROR] Processing message failed: {e}")
                 print(f" [DEBUG] Final log for failed message: {final_log}")
     except asyncio.CancelledError:
-        # Εδώ ερχόμαστε ΜΟΝΟ όταν το Kubernetes κάνει kill το pod
+        # Pod shutdown signal received, we exit the loop gracefully
         print("[SHUTDOWN] Received stop signal. Stopping Kafka consumer loop...")
     except Exception as e:
         print(f"[FATAL ERROR] Unexpected error in Kafka loop: {e}")
     finally:
-        # Κλείνουμε τον Kafka με ασφάλεια
         print("[SHUTDOWN] Closing Kafka connections...")
         await consumer.stop()
         await producer.stop()
@@ -141,26 +139,24 @@ async def kafka_consumer_loop():
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global ssh_client
-    # Αρχικοποίηση SSH όταν ξεκινάει η εφαρμογή
     ssh_client = create_ssh_client()
     
     task = asyncio.create_task(kafka_consumer_loop())
     yield
-    
-    # Διαδικασία τερματισμού
+
     task.cancel()
     try:
-        await task  # Περιμένουμε να τερματίσει ομαλά ο Kafka
+        await task 
     except asyncio.CancelledError:
         print("[SHUTDOWN] Kafka background task cancelled successfully.")
-        
-    # Κλείνουμε και το SSH
+           
     if ssh_client:
         ssh_client.close()
         print("[SHUTDOWN] SSH Connection closed.")
 
 app = FastAPI(lifespan=lifespan, title="Legacy SSH Wrapper API")
 
+# For debugging purposes, we can have a simple endpoint to check if the service is running
 @app.get("/balance/{account_id}")
 async def get_balance(account_id: str):
     try:

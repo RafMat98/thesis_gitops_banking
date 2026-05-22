@@ -1,4 +1,3 @@
-# 1. Το Service που "ξέχασε" να φτιάξει το Strimzi
 apiVersion: v1
 kind: Service
 metadata:
@@ -9,14 +8,13 @@ metadata:
     strimzi.io/name: main-cluster-kafka-exporter
 spec:
   selector:
-    strimzi.io/name: main-cluster-kafka-exporter # Βρίσκει το Pod του Exporter
+    strimzi.io/name: main-cluster-kafka-exporter
   ports:
     - name: tcp-prometheus
       port: 9404
       targetPort: 9404
 
 ---
-# 2. Το ServiceMonitor για τον Prometheus Operator
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
@@ -44,14 +42,14 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: inquiry-backend # ◄ Πρέπει να είναι ΤΟ ΙΔΙΟ label που έχει το Service της Java
+      app: inquiry-backend
   namespaceSelector:
     matchNames:
       - banking-apps
   endpoints:
-    - port: java-http-metrics # ◄ Το όνομα (name) της πόρτας όπως το έχεις δηλώσει στο Service σου
-      path: /actuator/prometheus # ◄ Το path της Java (Default για το Micrometer)
-      interval: 5s # Κάθε 5 δευτερόλεπτα
+    - port: java-http-metrics
+      path: /actuator/prometheus
+      interval: 5s
 ---
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor

@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: "https://github.com/RafMat98/thesis_gitops_banking.git"
-    targetRevision: development
+    targetRevision: development_doks
     path: infrastructure/mailpit
   destination:
     server: "https://kubernetes.default.svc"

@@ -21,8 +21,8 @@ spec:
             passwordKey: "admin-password"
             
           service:
-            type: NodePort
-            nodePort: 32000
+            type: ClusterIP
+            port: 8090
 
         prometheusOperator:
           nodeSelector: 
