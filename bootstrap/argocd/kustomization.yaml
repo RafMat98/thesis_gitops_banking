@@ -14,3 +14,4 @@ resources:
   - monitoring-app.yaml
   - banking-monitoring-config.yaml
   - ibm-interface.yaml
+  - ingress-app.yaml
