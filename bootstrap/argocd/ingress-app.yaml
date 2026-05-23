@@ -14,9 +14,16 @@ spec:
     helm:
       values: |
         controller:
-          publishService:
+          hostNetwork: true        
+          hostPort:
             enabled: true
-            type: LoadBalancer
+          service:
+            type: NodePort
+          replicaCount: 2
+          updateStrategy:
+            type: RollingUpdate
+            rollingUpdate:
+              maxUnavailable: 1
   destination:
     server: "https://kubernetes.default.svc"
     namespace: ingress-nginx
