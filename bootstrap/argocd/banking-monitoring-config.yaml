@@ -3,6 +3,8 @@ kind: Application
 metadata:
   name: banking-monitoring-config
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1" # Ensure this application is synced after the Kafka cluster is set up
 spec:
   project: default
   source:
