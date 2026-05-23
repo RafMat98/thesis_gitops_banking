@@ -3,6 +3,8 @@ kind: Application
 metadata:
   name: kafka-cluster
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0" # Ensure this application is synced before the monitoring configuration and IBM interface
 spec:
   project: default
   source:

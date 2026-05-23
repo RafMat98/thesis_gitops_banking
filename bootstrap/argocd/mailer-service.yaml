@@ -3,6 +3,8 @@ kind: Application
 metadata:
   name: mailer-service
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1" # Ensure this application is synced after the Kafka cluster, monitoring configuration, and IBM interface are set up
 spec:
   project: default
   source:

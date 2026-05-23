@@ -3,6 +3,8 @@ kind: Application
 metadata:
   name: scripts
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0" # Ensure this application is synced before any applications that depend on the scripts
 spec:
   project: default
   source:
