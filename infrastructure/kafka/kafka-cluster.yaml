@@ -10,6 +10,8 @@ spec:
     version: 4.2.0
     metadataVersion: "4.2-IV0"
     #  # --- Using reflector annotations to allow secure sharing of the cluster CA certificate with the banking-apps namespace ---
+    authorization:
+      type: simple
     template:
       clusterCaCert:
         metadata:
