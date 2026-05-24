@@ -20,7 +20,7 @@ spec:
           service:
             type: NodePort
             nodePorts:
-              http: 30080
+              http: 31000
               https: 30443
           replicaCount: 2
           updateStrategy:
