@@ -7,7 +7,7 @@ spec:
   scaleTargetRef:
     name: ibm-interface
   minReplicaCount: 0
-  maxReplicaCount: 4
+  maxReplicaCount: 6
   cooldownPeriod: 60
   triggers:
     - type: kafka
