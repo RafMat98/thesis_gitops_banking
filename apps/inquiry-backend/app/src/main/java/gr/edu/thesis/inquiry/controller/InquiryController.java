@@ -30,6 +30,12 @@ public class InquiryController {
 
     @GetMapping("/balance/{accountId}")
     public ResponseEntity<String> getBalance(@PathVariable String accountId) {
+        if (!accountId.matches("^ACC-\\d{6}$")) {
+        return ResponseEntity
+            .badRequest()
+            .body("Invalid account ID format. Expected: ACC-XXXXXX");
+    }
+    
         requestCounter.increment(); 
         producerTemplate.sendBody("direct:sendInquiry", accountId);
         return ResponseEntity.ok("Request for " + accountId + " submitted to queue.");
