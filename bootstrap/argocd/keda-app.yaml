@@ -11,6 +11,24 @@ spec:
     repoURL: "https://kedacore.github.io/charts"
     targetRevision: 2.19.0
     chart: keda
+    helm:
+      values: |
+        operator:
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 1000m
+              memory: 512Mi
+        metricsServer:
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 1000m
+              memory: 512Mi
   destination:
     server: "https://kubernetes.default.svc"
     namespace: keda
