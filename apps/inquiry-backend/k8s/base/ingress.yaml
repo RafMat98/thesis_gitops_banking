@@ -5,14 +5,14 @@ metadata:
   namespace: banking-apps
   annotations:
     nginx.ingress.kubernetes.io/use-regex: "true"
-    nginx.ingress.kubernetes.io/rewrite-target: /api/v1/balance/$2
+    nginx.ingress.kubernetes.io/rewrite-target: /api/v1/balance/$1
 spec:
   ingressClassName: nginx
   rules:
     - host: kafka.local # 1 :  Domain
       http:
         paths:
-          - path: /(/|$)(.*) # 2:  Path
+          - path: /(.*) # 2:  Path
             pathType: ImplementationSpecific
             backend:
               service:
