@@ -6,7 +6,7 @@ metadata:
   labels:
     strimzi.io/cluster: main-cluster
 spec:
-  partitions: 4
+  partitions: 6
   replicas: 3
 ---
 apiVersion: kafka.strimzi.io/v1
