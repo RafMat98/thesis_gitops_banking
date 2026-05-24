@@ -3,13 +3,15 @@ kind: Ingress
 metadata:
   name: banking-api-ingress
   namespace: banking-apps
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /api/v1/balance/$2
 spec:
   ingressClassName: nginx
   rules:
     - host: kafka.local # 1 :  Domain
       http:
         paths:
-          - path: /api/v1/balance # 2:  Path
+          - path: /(/|$)(.*) # 2:  Path
             pathType: Prefix
             backend:
               service:
