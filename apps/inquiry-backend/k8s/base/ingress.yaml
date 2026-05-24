@@ -13,6 +13,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: banking-api-service # 3: Ο Προορισμός
+                name: inquiry-backend-service # 3: Ο Προορισμός
                 port:
-                  number: 8080
+                  number: 80
