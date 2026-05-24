@@ -182,18 +182,16 @@ async def kafka_consumer_loop():
 async def lifespan(app: FastAPI):
     global ssh_client, ssh_shell
     try:
-        create_ssh_shell()
+        ssh_client, ssh_shell = create_ssh_shell()  # ← Fix
     except Exception as e:
         print(f" [FATAL] Failed to initialize SSH Shell on startup: {e}")
     task = asyncio.create_task(kafka_consumer_loop())
     yield
-
     task.cancel()
     try:
         await task
     except asyncio.CancelledError:
         print("[SHUTDOWN] Kafka background task cancelled successfully.")
-        
     if ssh_client:
         ssh_client.close()
         print("[SHUTDOWN] SSH Connection closed.")
