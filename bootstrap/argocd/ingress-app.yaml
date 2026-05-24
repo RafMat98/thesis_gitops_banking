@@ -14,11 +14,14 @@ spec:
     helm:
       values: |
         controller:
-          hostNetwork: true        
+          hostNetwork: false       
           hostPort:
-            enabled: true
+            enabled: false
           service:
             type: NodePort
+            nodePorts:
+              http: 30080
+              https: 30443
           replicaCount: 2
           updateStrategy:
             type: RollingUpdate
