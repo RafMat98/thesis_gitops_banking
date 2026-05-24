@@ -6,13 +6,13 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: kafka.local # 1 : Το Domain
+    - host: kafka.local # 1 :  Domain
       http:
         paths:
-          - path: /api/v1/balance # 2: Το Path
+          - path: /api/v1/balance # 2:  Path
             pathType: Prefix
             backend:
               service:
-                name: inquiry-backend-service # 3: Ο Προορισμός
+                name: inquiry-backend-service # 3: Destination
                 port:
                   number: 80
