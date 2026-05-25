@@ -6,6 +6,8 @@ metadata:
   namespace: infra-system
   labels:
     strimzi.io/cluster: main-cluster
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 
 spec:
   replicas: 3

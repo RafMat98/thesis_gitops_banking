@@ -5,6 +5,7 @@ metadata:
   namespace: infra-system
   annotations:
     strimzi.io/node-pools: enabled # Enable Connector resources
+    argocd.argoproj.io/sync-wave: "0"
 spec:
   kafka:
     version: 4.2.0
