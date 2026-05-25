@@ -7,19 +7,14 @@ metadata:
     strimzi.io/node-pools: enabled # Enable Connector resources
     argocd.argoproj.io/sync-wave: "0"
 spec:
+  clusterCa:
+    generateCertificateAuthority: true
   kafka:
     version: 4.2.0
     metadataVersion: "4.2-IV0"
     #  # --- Using reflector annotations to allow secure sharing of the cluster CA certificate with the banking-apps namespace ---
     authorization:
       type: simple
-    template:
-      clusterCaCert:
-        metadata:
-          annotations:
-            reflector.v1.k8s.emberstack.com/reflection-allowed: "true"
-            reflector.v1.k8s.emberstack.com/reflection-allowed-namespaces: "banking-apps"
-            reflector.v1.k8s.emberstack.com/reflection-auto-enabled: "true"
     listeners:
       - name: tls
         port: 9093
