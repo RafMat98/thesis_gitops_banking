@@ -4,12 +4,12 @@ metadata:
   name: ibm-interface
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "1" # Ensure this application is synced after the monitoring configuration is set up
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   project: default
   source:
     repoURL: "https://github.com/RafMat98/thesis_gitops_banking.git"
-    targetRevision: development
+    targetRevision: development_doks
     path: apps/ibm-interface/k8s/overlays/keda
   destination:
     server: "https://kubernetes.default.svc"
