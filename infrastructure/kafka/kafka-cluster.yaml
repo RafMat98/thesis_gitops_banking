@@ -7,8 +7,6 @@ metadata:
     strimzi.io/node-pools: enabled # Enable Connector resources
     argocd.argoproj.io/sync-wave: "0"
 spec:
-  clusterCa:
-    generateCertificateAuthority: true
   kafka:
     version: 4.2.0
     metadataVersion: "4.2-IV0"
