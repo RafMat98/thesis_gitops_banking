@@ -4,7 +4,7 @@ metadata:
   name: ingress-controller
   namespace: argocd
   annotations:
-    argocd.argoproj.io/sync-wave: "-1" # Ξεκινάει ΠΡΩΤΟ
+    argocd.argoproj.io/sync-wave: "0"
 spec:
   project: default
   source:
