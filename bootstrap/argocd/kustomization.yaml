@@ -16,3 +16,4 @@ resources:
   - ibm-interface.yaml
   - ingress-app.yaml
   - namespaces.yaml
+  - strimzi-operator.yaml
