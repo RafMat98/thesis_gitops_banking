@@ -9,7 +9,7 @@ resources:
   - ibm-cilium-egress.yaml
   - java-ingress.yaml
   - kafka-allow-keda-ingress.yaml
-  - keda-allow-kafka-egress.yaml
+  # - keda-allow-kafka-egress.yaml
   - mailer-service-egress.yaml
   - mailpit-ingress.yaml
   - profile-service-egress.yaml
