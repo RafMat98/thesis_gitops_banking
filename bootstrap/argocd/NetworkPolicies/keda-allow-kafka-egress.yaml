@@ -13,14 +13,34 @@ spec:
   policyTypes:
     - Egress
   egress:
+    # 1. Kafka Cluster (Strimzi)
     - to:
         - namespaceSelector:
             matchLabels:
               kubernetes.io/metadata.name: infra-system
           podSelector:
             matchLabels:
-              # Διορθώθηκε το label του Strimzi
               strimzi.io/cluster: main-cluster
       ports:
         - protocol: TCP
           port: 9093
+
+    # 2. Kubernetes API Server (Required for all the Operators)
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: default
+      ports:
+        - protocol: TCP
+          port: 443
+
+    # 3.CoreDNS
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
