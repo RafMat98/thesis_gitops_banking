@@ -12,6 +12,7 @@ spec:
 
   policyTypes:
     - Egress
+    - Ingress
   egress:
     # 1. Kafka Cluster (Strimzi)
     - to:
@@ -50,3 +51,8 @@ spec:
       ports:
         - protocol: TCP
           port: 443
+  ingress:
+    # Kubelet health probes
+    - ports:
+        - protocol: TCP
+          port: 8081
