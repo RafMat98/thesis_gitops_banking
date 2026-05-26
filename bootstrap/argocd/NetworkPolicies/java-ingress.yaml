@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: java-backend-ingress
+  namespace: banking-apps
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+
+spec:
+  podSelector:
+    matchLabels:
+      app: inquiry-backend
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: ingress-nginx

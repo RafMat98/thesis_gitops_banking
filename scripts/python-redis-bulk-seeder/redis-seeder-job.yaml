@@ -8,6 +8,9 @@ metadata:
     argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
 spec:
   template:
+    metadata:
+      labels:
+        app: redis-bulk-seeder
     spec:
       containers:
         - name: redis-bulk-seeder

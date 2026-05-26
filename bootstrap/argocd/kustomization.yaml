@@ -5,4 +5,5 @@ resources:
   - infrastructure/
   - monitoring/
   - workloads/
+  - NetworkPolicies/
   - namespaces.yaml

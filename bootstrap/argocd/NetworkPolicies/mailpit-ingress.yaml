@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: mailpit-ingress
+  namespace: infra-system
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+
+spec:
+  podSelector:
+    matchLabels:
+      app: mailpit
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: banking-apps
+          podSelector:
+            matchLabels:
+              app: mailer-service
+      ports:
+        - protocol: TCP
+          port: 1025

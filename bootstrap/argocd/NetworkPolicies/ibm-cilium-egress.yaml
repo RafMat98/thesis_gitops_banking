@@ -1,0 +1,18 @@
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: ibm-external-access
+  namespace: banking-apps
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+spec:
+  endpointSelector:
+    matchLabels:
+      app: ibm-interface
+  egress:
+    - toFQDNs:
+        - matchName: "pub400.com"
+      toPorts:
+        - ports:
+            - port: "2222"
+              protocol: TCP

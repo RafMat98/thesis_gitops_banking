@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: redis-ingress
+  namespace: infra-system
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+
+spec:
+  podSelector:
+    matchLabels:
+      app: redis
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: banking-apps
+          podSelector:
+            matchLabels:
+              app: profile-service
+        - podSelector:
+            matchLabels:
+              app: redis-bulk-seeder
+      ports:
+        - protocol: TCP
+          port: 6379

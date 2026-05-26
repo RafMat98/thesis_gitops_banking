@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: mailer-service-egress
+  namespace: banking-apps
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+spec:
+  podSelector:
+    matchLabels:
+      app: mailer-service
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: infra-system
+          podSelector:
+            matchLabels:
+              app: mailpit
+      ports:
+        - protocol: UDP
+          port: 1025
+        - protocol: TCP
+          port: 1025
