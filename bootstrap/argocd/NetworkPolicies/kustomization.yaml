@@ -4,7 +4,7 @@ kind: Kustomization
 resources:
   - allow-prometheus-ingress.yaml
   - baseline-egress.yaml
-  - default-deny-all.yaml
+  - default-deny.yaml
   - grafana-nginx-ingress.yaml
   - ibm-cillium-egress.yaml
   - java-ingress.yaml
