@@ -14,5 +14,5 @@ spec:
         - matchName: "pub400.com"
       toPorts:
         - ports:
-            - port: 2222
+            - port: "2222"
               protocol: TCP
