@@ -6,7 +6,7 @@ resources:
   - baseline-egress.yaml
   - default-deny.yaml
   - grafana-nginx-ingress.yaml
-  - ibm-cillium-egress.yaml
+  - ibm-cilium-egress.yaml
   - java-ingress.yaml
   - kafka-allow-keda-ingress.yaml
   - keda-allow-kafka-egress.yaml
