@@ -44,3 +44,9 @@ spec:
           port: 53
         - protocol: TCP
           port: 53
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0 # Επιτρέπει την έξοδο προς οποιαδήποτε IP (εσωτερική ή εξωτερική)...
+      ports:
+        - protocol: TCP
+          port: 443
