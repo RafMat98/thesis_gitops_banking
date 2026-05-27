@@ -8,11 +8,11 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app: go-mailer-service # <-- (Σιγουρέψου ότι αυτό είναι το σωστό label του pod σου!)
+      app: go-mailer-service
   policyTypes:
     - Egress
   egress:
-    # 1. Πρόσβαση στο Mailpit (SMTP)
+    # 1. Mailpit (SMTP)
     - to:
         - namespaceSelector:
             matchLabels:
@@ -21,11 +21,11 @@ spec:
             matchLabels:
               app: mailpit
       ports:
-        # Το SMTP χρησιμοποιεί μόνο TCP, το UDP δεν χρειάζεται καν, αλλά δεν βλάπτει!
+        # SMTP uses TCP only,
         - protocol: TCP
           port: 1025
 
-    # 2. Πρόσβαση στο CoreDNS
+    # 2. CoreDNS
     - to:
         - namespaceSelector:
             matchLabels:
@@ -36,7 +36,7 @@ spec:
         - protocol: TCP
           port: 53
 
-    # 3. Πρόσβαση στον Kafka Broker (ΤΟ ΚΡΙΣΙΜΟ ΚΟΜΜΑΤΙ)
+    # 3. Kafka Broker (THE CRITICAL PIECE)
     - to:
         - namespaceSelector:
             matchLabels:
