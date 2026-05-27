@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
+	"sync"
 	"syscall"
 	"time"
 
@@ -149,6 +150,7 @@ func main() {
 		"bootstrap.servers":                   kafkaBrokers,
 		"group.id":                            "go-mailer-group",
 		"auto.offset.reset":                   "earliest", // ensure zero data loss on restart
+		"enable.auto.commit":                  false,      // manual commit for better control
 		"security.protocol":                   "SSL",
 		"ssl.ca.location":                     "/app/certs/ca.crt",
 		"ssl.certificate.location":            "/app/certs/user.crt",
@@ -167,11 +169,15 @@ func main() {
 	sigchan := make(chan os.Signal, 1)
 	signal.Notify(sigchan, syscall.SIGINT, syscall.SIGTERM)
 
-	// --- Start Kafka polling loop in a background goroutine ---
+	var wg sync.WaitGroup
 	run := true
+	// --- Start Kafka polling loop in a background goroutine ---
+	wg.Add(1)
 	go func() {
+		defer wg.Done()
+
 		for run {
-			ev := consumer.Poll(100) // poll every 100ms
+			ev := consumer.Poll(100)
 			if ev == nil {
 				continue
 			}
@@ -184,18 +190,18 @@ func main() {
 					continue
 				}
 
-				// Simulate processing delay to allow message lag to build up,
-				// which triggers KEDA to scale out additional consumer pods.
 				time.Sleep(time.Duration(delayMs) * time.Millisecond)
-
-				// Attempt to send the notification email
 				if err := sendEmail(data, smtpHost, smtpPort, smtpUser, smtpPass); err != nil {
 					fmt.Printf(" Failed to send email to %s: %v\n", data.Email, err)
 					emailsSentTotal.WithLabelValues("error").Inc()
+
+					consumer.CommitMessage(e)
 				} else {
 					fmt.Printf("[%s]  Email sent to %s (Account: %s)\n",
 						time.Now().Format("15:04:05"), data.Email, data.AccountID)
 					emailsSentTotal.WithLabelValues("success").Inc()
+
+					consumer.CommitMessage(e)
 				}
 
 			case kafka.Error:
@@ -209,6 +215,7 @@ func main() {
 	fmt.Println("\n  Shutdown signal received (SIGTERM). Closing consumer...")
 
 	run = false
+	wg.Wait()
 	consumer.Close()
 	fmt.Println(" Mailer Service shut down safely.")
 }
