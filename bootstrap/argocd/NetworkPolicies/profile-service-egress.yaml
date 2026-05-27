@@ -1,24 +1,35 @@
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
 metadata:
   name: profile-service-egress
   namespace: banking-apps
   annotations:
     argocd.argoproj.io/sync-wave: "-2"
 spec:
-  podSelector:
+  endpointSelector:
     matchLabels:
       app: profile-service
-  policyTypes:
-    - Egress
+
   egress:
-    - to:
-        - namespaceSelector:
-            matchLabels:
-              kubernetes.io/metadata.name: infra-system
-          podSelector:
-            matchLabels:
-              app: redis
-      ports:
-        - protocol: TCP
-          port: 6379
+    # 1.CoreDNS
+    - toEndpoints:
+        - matchLabels:
+            "k8s:io.kubernetes.pod.namespace": kube-system
+            "k8s:k8s-app": kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: ANY
+          rules:
+            dns:
+              - matchPattern: "*"
+
+    # 2. Mailpit
+    - toEndpoints:
+        - matchLabels:
+            "k8s:io.kubernetes.pod.namespace": infra-system
+            app: redis
+      toPorts:
+        - ports:
+            - port: "6379"
+              protocol: TCP
