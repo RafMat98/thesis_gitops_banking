@@ -8,10 +8,10 @@ metadata:
 spec:
   endpointSelector:
     matchLabels:
-      app: go-mailer-service # <--- ΠΡΟΣΟΧΗ: Βεβαιώσου ότι αυτό είναι το σωστό label σου!
+      app: go-mailer-service
 
   egress:
-    # 1. Πρόσβαση στο CoreDNS (Απαραίτητο για το DNS resolution)
+    # 1.CoreDNS
     - toEndpoints:
         - matchLabels:
             "k8s:io.kubernetes.pod.namespace": kube-system
@@ -24,12 +24,12 @@ spec:
             dns:
               - matchPattern: "*"
 
-    # 3. Πρόσβαση στο Mailpit (Για να στείλει τα emails και να κάνει commit!)
+    # 2. Mailpit
     - toEndpoints:
         - matchLabels:
             "k8s:io.kubernetes.pod.namespace": infra-system
-            app: mailpit # <--- Βεβαιώσου ότι το pod του Mailpit έχει αυτό το label
+            app: mailpit
       toPorts:
         - ports:
             - port: "1025"
-              protocol: TCP # Το SMTP τρέχει μόνο πάνω από TCP
+              protocol: TCP
