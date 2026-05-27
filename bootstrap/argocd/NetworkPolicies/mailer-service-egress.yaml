@@ -1,35 +1,49 @@
-apiVersion: cilium.io/v2
-kind: CiliumNetworkPolicy
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
 metadata:
   name: mailer-service-egress
   namespace: banking-apps
   annotations:
     argocd.argoproj.io/sync-wave: "-2"
 spec:
-  endpointSelector:
+  podSelector:
     matchLabels:
-      app: go-mailer-service
-
+      app: go-mailer-service # <-- (Σιγουρέψου ότι αυτό είναι το σωστό label του pod σου!)
+  policyTypes:
+    - Egress
   egress:
-    # 1.CoreDNS
-    - toEndpoints:
-        - matchLabels:
-            "k8s:io.kubernetes.pod.namespace": kube-system
-            "k8s:k8s-app": kube-dns
-      toPorts:
-        - ports:
-            - port: "53"
-              protocol: ANY
-          rules:
-            dns:
-              - matchPattern: "*"
+    # 1. Πρόσβαση στο Mailpit (SMTP)
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: infra-system
+          podSelector:
+            matchLabels:
+              app: mailpit
+      ports:
+        # Το SMTP χρησιμοποιεί μόνο TCP, το UDP δεν χρειάζεται καν, αλλά δεν βλάπτει!
+        - protocol: TCP
+          port: 1025
 
-    # 2. Mailpit
-    - toEndpoints:
-        - matchLabels:
-            "k8s:io.kubernetes.pod.namespace": infra-system
-            app: mailpit
-      toPorts:
-        - ports:
-            - port: "1025"
-              protocol: TCP
+    # 2. Πρόσβαση στο CoreDNS
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+
+    # 3. Πρόσβαση στον Kafka Broker (ΤΟ ΚΡΙΣΙΜΟ ΚΟΜΜΑΤΙ)
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: infra-system
+          podSelector:
+            matchLabels:
+              strimzi.io/cluster: main-cluster
+      ports:
+        - protocol: TCP
+          port: 9093
