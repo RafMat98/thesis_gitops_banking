@@ -1,52 +1,48 @@
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
 metadata:
   name: keda-egress-to-kafka
   namespace: keda
   annotations:
     argocd.argoproj.io/sync-wave: "-2"
 spec:
-  podSelector:
+  endpointSelector:
     matchLabels:
       app: keda-operator
 
-  policyTypes:
-    - Egress
   egress:
-    # 1. Kafka Cluster (Strimzi)
-    - to:
-        - namespaceSelector:
-            matchLabels:
-              kubernetes.io/metadata.name: infra-system
-          podSelector:
-            matchLabels:
-              strimzi.io/cluster: main-cluster
-      ports:
-        - protocol: TCP
-          port: 9093
+    # 1.Entity Cilium
+    - toEntities:
+        - kube-apiserver
+      toPorts:
+        - ports:
+            - port: "443"
+              protocol: TCP
 
-    # 2. Kubernetes API Server (Required for all the Operators)
-    - to:
-        - namespaceSelector:
-            matchLabels:
-              kubernetes.io/metadata.name: default
-      ports:
-        - protocol: TCP
-          port: 443
+    # 2. CoreDNS
+    - toEndpoints:
+        - matchLabels:
+            "k8s:io.kubernetes.pod.namespace": kube-system
+            "k8s:k8s-app": kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: ANY
 
-    # 3.CoreDNS
-    - to:
-        - namespaceSelector:
-            matchLabels:
-              kubernetes.io/metadata.name: kube-system
-      ports:
-        - protocol: UDP
-          port: 53
-        - protocol: TCP
-          port: 53
-    - to:
-        - ipBlock:
-            cidr: 0.0.0.0/0 # Επιτρέπει την έξοδο προς οποιαδήποτε IP (εσωτερική ή εξωτερική)...
-      ports:
-        - protocol: TCP
-          port: 443
+    # 3. Kafka Broker (Strimzi)
+    - toEndpoints:
+        - matchLabels:
+            "k8s:io.kubernetes.pod.namespace": infra-system
+            strimzi.io/cluster: main-cluster
+      toPorts:
+        - ports:
+            - port: "9093"
+              protocol: TCP
+
+    # 4. Internet Προαιρετικό
+    # - toEntities:
+    #     - world
+    #   toPorts:
+    #     - ports:
+    #         - port: "443"
+    #           protocol: TCP
