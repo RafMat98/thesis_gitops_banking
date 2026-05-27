@@ -8,10 +8,11 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app: mailer-service
+      app: go-mailer-service # <-- (Σιγουρέψου ότι αυτό είναι το σωστό label του pod σου!)
   policyTypes:
     - Egress
   egress:
+    # 1. Πρόσβαση στο Mailpit (SMTP)
     - to:
         - namespaceSelector:
             matchLabels:
@@ -20,10 +21,11 @@ spec:
             matchLabels:
               app: mailpit
       ports:
-        - protocol: UDP
-          port: 1025
+        # Το SMTP χρησιμοποιεί μόνο TCP, το UDP δεν χρειάζεται καν, αλλά δεν βλάπτει!
         - protocol: TCP
           port: 1025
+
+    # 2. Πρόσβαση στο CoreDNS
     - to:
         - namespaceSelector:
             matchLabels:
@@ -33,3 +35,15 @@ spec:
           port: 53
         - protocol: TCP
           port: 53
+
+    # 3. Πρόσβαση στον Kafka Broker (ΤΟ ΚΡΙΣΙΜΟ ΚΟΜΜΑΤΙ)
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: infra-system
+          podSelector:
+            matchLabels:
+              strimzi.io/cluster: main-cluster
+      ports:
+        - protocol: TCP
+          port: 9093
