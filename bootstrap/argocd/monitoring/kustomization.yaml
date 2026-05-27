@@ -4,3 +4,4 @@ kind: Kustomization
 resources:
   - monitoring-app.yaml
   - banking-monitoring-config.yaml
+  - ingress.yaml
