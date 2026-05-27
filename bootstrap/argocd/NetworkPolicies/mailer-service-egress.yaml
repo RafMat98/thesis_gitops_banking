@@ -1,49 +1,35 @@
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
 metadata:
   name: mailer-service-egress
   namespace: banking-apps
   annotations:
     argocd.argoproj.io/sync-wave: "-2"
 spec:
-  podSelector:
+  endpointSelector:
     matchLabels:
-      app: go-mailer-service # <-- (Σιγουρέψου ότι αυτό είναι το σωστό label του pod σου!)
-  policyTypes:
-    - Egress
+      app: go-mailer-service # <--- ΠΡΟΣΟΧΗ: Βεβαιώσου ότι αυτό είναι το σωστό label σου!
+
   egress:
-    # 1. Πρόσβαση στο Mailpit (SMTP)
-    - to:
-        - namespaceSelector:
-            matchLabels:
-              kubernetes.io/metadata.name: infra-system
-          podSelector:
-            matchLabels:
-              app: mailpit
-      ports:
-        # Το SMTP χρησιμοποιεί μόνο TCP, το UDP δεν χρειάζεται καν, αλλά δεν βλάπτει!
-        - protocol: TCP
-          port: 1025
+    # 1. Πρόσβαση στο CoreDNS (Απαραίτητο για το DNS resolution)
+    - toEndpoints:
+        - matchLabels:
+            "k8s:io.kubernetes.pod.namespace": kube-system
+            "k8s:k8s-app": kube-dns
+      toPorts:
+        - ports:
+            - port: "53"
+              protocol: ANY
+          rules:
+            dns:
+              - matchPattern: "*"
 
-    # 2. Πρόσβαση στο CoreDNS
-    - to:
-        - namespaceSelector:
-            matchLabels:
-              kubernetes.io/metadata.name: kube-system
-      ports:
-        - protocol: UDP
-          port: 53
-        - protocol: TCP
-          port: 53
-
-    # 3. Πρόσβαση στον Kafka Broker (ΤΟ ΚΡΙΣΙΜΟ ΚΟΜΜΑΤΙ)
-    - to:
-        - namespaceSelector:
-            matchLabels:
-              kubernetes.io/metadata.name: infra-system
-          podSelector:
-            matchLabels:
-              strimzi.io/cluster: main-cluster
-      ports:
-        - protocol: TCP
-          port: 9093
+    # 3. Πρόσβαση στο Mailpit (Για να στείλει τα emails και να κάνει commit!)
+    - toEndpoints:
+        - matchLabels:
+            "k8s:io.kubernetes.pod.namespace": infra-system
+            app: mailpit # <--- Βεβαιώσου ότι το pod του Mailpit έχει αυτό το label
+      toPorts:
+        - ports:
+            - port: "1025"
+              protocol: TCP # Το SMTP τρέχει μόνο πάνω από TCP
