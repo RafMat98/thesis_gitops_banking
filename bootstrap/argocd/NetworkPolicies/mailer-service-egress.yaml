@@ -8,11 +8,10 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app: go-mailer-service
+      app: mailer-service
   policyTypes:
     - Egress
   egress:
-    # 1. Mailpit (SMTP)
     - to:
         - namespaceSelector:
             matchLabels:
@@ -21,11 +20,10 @@ spec:
             matchLabels:
               app: mailpit
       ports:
-        # SMTP uses TCP only,
+        - protocol: UDP
+          port: 1025
         - protocol: TCP
           port: 1025
-
-    # 2. CoreDNS
     - to:
         - namespaceSelector:
             matchLabels:
@@ -35,15 +33,3 @@ spec:
           port: 53
         - protocol: TCP
           port: 53
-
-    # 3. Kafka Broker (THE CRITICAL PIECE)
-    - to:
-        - namespaceSelector:
-            matchLabels:
-              kubernetes.io/metadata.name: infra-system
-          podSelector:
-            matchLabels:
-              strimzi.io/cluster: main-cluster
-      ports:
-        - protocol: TCP
-          port: 9093
