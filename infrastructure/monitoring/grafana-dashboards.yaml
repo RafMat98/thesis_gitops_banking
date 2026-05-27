@@ -134,7 +134,7 @@ data:
           "type": "stat",
           "gridPos": { "h": 8, "w": 12, "x": 0, "y": 60 },
           "targets": [
-            { "expr": "sum(increase(inquiry_requests_total[15m]))", "legendFormat": "Api Requests" }
+            { "expr": "sum(max_over_time(inquiry_requests_total[15m]))", "legendFormat": "Api Requests" }
           ]
         },
         {
@@ -142,7 +142,7 @@ data:
           "type": "stat",
           "gridPos": { "h": 8, "w": 12, "x": 12, "y": 60 },
           "targets": [
-            { "expr": "sum(increase(go_emails_processed_total{status=\"success\"}[15m]))", "legendFormat": "Mails Sent" }
+            { "expr": "sum(max_over_time(go_emails_processed_total{status=\"success\"}[15m]))", "legendFormat": "Mails Sent" }
           ]
         }
       ]
