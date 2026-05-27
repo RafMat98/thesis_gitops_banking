@@ -22,7 +22,7 @@ spec:
             annotations:
               service.beta.kubernetes.io/do-loadbalancer-name: "banking-thesis-lb"
               service.beta.kubernetes.io/do-loadbalancer-enable-proxy-protocol: "true"
-          replicaCount: 2
+          replicaCount: 1
           updateStrategy:
             type: RollingUpdate
             rollingUpdate:

@@ -13,3 +13,4 @@ CI_Phase/Jenkinsfile_mailer-service
 *.tfstate.*
 *.tfvars
 *.tfvars.json
+.VSCodeCounter/

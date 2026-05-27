@@ -39,7 +39,7 @@ spec:
             - port: "9093"
               protocol: TCP
 
-    # 4. Internet Προαιρετικό
+    # 4. Internet Access (Optional, if KEDA needs to access external services)
     # - toEntities:
     #     - world
     #   toPorts:

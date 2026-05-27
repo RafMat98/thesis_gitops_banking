@@ -36,6 +36,8 @@ spec:
               value: "/certs/tls.crt"
             - name: MP_SMTP_TLS_KEY
               value: "/certs/tls.key"
+            - name: MP_MAX_MESSAGES
+              value: "10000"
           volumeMounts:
             - name: tls-volume
               mountPath: "/certs"

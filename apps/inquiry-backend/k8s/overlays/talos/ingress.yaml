@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: banking-api-ingress
+  namespace: banking-apps
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /api/v1/balance/$1
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: banking-thesis.kafka.local # 1 :  Domain
+      http:
+        paths:
+          - path: /(.*) # 2:  Path
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: inquiry-backend-service # 3: Destination
+                port:
+                  number: 80
