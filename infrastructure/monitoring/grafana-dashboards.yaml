@@ -29,12 +29,13 @@ data:
         
         {
           "type": "row",
-          "title": "System Metrics: Cobol Service (Legacy Backend)",
+          "title": "System Metrics: Ibmi Interface Service (Legacy Backend)",
           "gridPos": { "h": 1, "w": 24, "x": 0, "y": 9 },
           "collapsed": false
         },
+
         {
-          "title": "Kafka Ingress Lag (Cobol Service)",
+          "title": "Kafka Ingress Lag (Ibmi Interface Service)",
           "type": "timeseries",
           "gridPos": { "h": 8, "w": 24, "x": 0, "y": 10 },
           "targets": [
@@ -42,7 +43,25 @@ data:
           ],
           "fieldConfig": { "defaults": { "color": { "mode": "palette-classic" }, "custom": { "drawStyle": "area", "fillOpacity": 20 } } }
         },
-
+        {
+          "title": "System Response: Active Replicas",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 44 },
+          "targets": [
+            { "expr": "kube_deployment_status_replicas_available{deployment='ibm-interface'}", "legendFormat": "Current Running Pods" },
+            { "expr": "kube_horizontalpodautoscaler_status_desired_replicas{horizontalpodautoscaler='keda-hpa-ibm-interface-scaledobject'}", "legendFormat": "HPA Desired Level" },
+            { "expr": "kube_horizontalpodautoscaler_status_desired_replicas{horizontalpodautoscaler='ibm-interface-hpa'}", "legendFormat": "HPA Desired Level" }
+          ]
+        },
+        {
+          "title": "CPU Usage vs Limit (%)",
+          "type": "gauge",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 44 },
+          "targets": [
+            { "expr": "sum(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate{namespace='banking-apps', pod=~'ibm-interface-.*'}) / sum(kube_pod_container_resource_limits{resource='cpu', namespace='banking-apps', pod=~'ibm-interface-.*'}) * 100", "legendFormat": "CPU Load" }
+          ],
+          "fieldConfig": { "defaults": { "min": 0, "max": 100, "unit": "percent", "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "red", "value": 80 } ] } } }
+        },
         {
           "type": "row",
           "title": "System Metrics: Go Profile Service",
