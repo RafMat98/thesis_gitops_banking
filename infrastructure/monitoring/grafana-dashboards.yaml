@@ -113,7 +113,7 @@ data:
         {
           "title": "System Response: Active Replicas",
           "type": "timeseries",
-          "gridPos": { "h": 8, "w": 24, "x": 0, "y": 52 },
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 52 },
           "targets": [
             { "expr": "kube_deployment_status_replicas_available{deployment='go-mailer-service'}", "legendFormat": "Current Running Pods" },
             { "expr": "kube_horizontalpodautoscaler_status_desired_replicas{horizontalpodautoscaler='keda-hpa-mailer-kafka-scaler'}", "legendFormat": "HPA Desired Level" },
@@ -123,7 +123,7 @@ data:
         {
           "title": "CPU Usage vs Limit (%)",
           "type": "gauge",
-          "gridPos": { "h": 8, "w": 24, "x": 12, "y": 52 },
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 52 },
           "targets": [
             { "expr": "sum(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate{namespace='banking-apps', pod=~'go-mailer-service-.*'}) / sum(kube_pod_container_resource_limits{resource='cpu', namespace='banking-apps', pod=~'go-mailer-service-.*'}) * 100", "legendFormat": "CPU Load" }
           ],
