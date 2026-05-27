@@ -20,11 +20,19 @@ data:
         {
           "title": "CPU Usage vs Limit (%)",
           "type": "gauge",
-          "gridPos": { "h": 8, "w": 24, "x": 0, "y": 1 },
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 1 },
           "targets": [
             { "expr": "sum(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate{namespace='banking-apps', pod=~'inquiry-backend-.*'}) / sum(kube_pod_container_resource_limits{resource='cpu', namespace='banking-apps', pod=~'inquiry-backend-.*'}) * 100", "legendFormat": "CPU Load" }
           ],
           "fieldConfig": { "defaults": { "min": 0, "max": 100, "unit": "percent", "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "red", "value": 80 } ] } } }
+        },
+        {
+          "title": "Java Spring Boot Service: Api Requests",
+          "type": "stat",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 1 },
+          "targets": [
+            { "expr": "sum(increase(inquiry_requests_total[15m]))", "legendFormat": "Api Requests" }
+          ]
         },
         
         {
@@ -33,7 +41,6 @@ data:
           "gridPos": { "h": 1, "w": 24, "x": 0, "y": 9 },
           "collapsed": false
         },
-
         {
           "title": "Kafka Ingress Lag (Ibmi Interface Service)",
           "type": "timeseries",
@@ -46,7 +53,7 @@ data:
         {
           "title": "System Response: Active Replicas",
           "type": "timeseries",
-          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 44 },
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 18 },
           "targets": [
             { "expr": "kube_deployment_status_replicas_available{deployment='ibm-interface'}", "legendFormat": "Current Running Pods" },
             { "expr": "kube_horizontalpodautoscaler_status_desired_replicas{horizontalpodautoscaler='keda-hpa-ibm-interface-scaledobject'}", "legendFormat": "HPA Desired Level" },
@@ -56,22 +63,23 @@ data:
         {
           "title": "CPU Usage vs Limit (%)",
           "type": "gauge",
-          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 44 },
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 18 },
           "targets": [
             { "expr": "sum(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate{namespace='banking-apps', pod=~'ibm-interface-.*'}) / sum(kube_pod_container_resource_limits{resource='cpu', namespace='banking-apps', pod=~'ibm-interface-.*'}) * 100", "legendFormat": "CPU Load" }
           ],
           "fieldConfig": { "defaults": { "min": 0, "max": 100, "unit": "percent", "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "red", "value": 80 } ] } } }
         },
+
         {
           "type": "row",
           "title": "System Metrics: Go Profile Service",
-          "gridPos": { "h": 1, "w": 24, "x": 0, "y": 18 },
+          "gridPos": { "h": 1, "w": 24, "x": 0, "y": 26 },
           "collapsed": false
         },
         {
           "title": "Kafka Ingress Lag (Profile Service)",
           "type": "timeseries",
-          "gridPos": { "h": 8, "w": 24, "x": 0, "y": 19 },
+          "gridPos": { "h": 8, "w": 24, "x": 0, "y": 27 },
           "targets": [
             { "expr": "sum(kafka_consumergroup_lag{consumergroup='go-microservice-group', topic='balance-responses'}) or vector(0)", "legendFormat": "Messages Waiting in Kafka" }
           ],
@@ -80,7 +88,7 @@ data:
         {
           "title": "System Response: Active Replicas",
           "type": "timeseries",
-          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 27 },
+          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 35 },
           "targets": [
             { "expr": "kube_deployment_status_replicas_available{deployment='go-profile-service'}", "legendFormat": "Current Running Pods" },
             { "expr": "kube_horizontalpodautoscaler_status_desired_replicas{horizontalpodautoscaler=~'keda-hpa-.*profile.*|profile-hpa'}", "legendFormat": "HPA Desired Level" }
@@ -89,7 +97,7 @@ data:
         {
           "title": "CPU Usage vs Limit (%)",
           "type": "gauge",
-          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 27 },
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 35 },
           "targets": [
             { "expr": "sum(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate{namespace='banking-apps', pod=~'go-profile-service-.*'}) / sum(kube_pod_container_resource_limits{resource='cpu', namespace='banking-apps', pod=~'go-profile-service-.*'}) * 100", "legendFormat": "CPU Load" }
           ],
@@ -99,13 +107,13 @@ data:
         {
           "type": "row",
           "title": "System Metrics: Go Mailer Service",
-          "gridPos": { "h": 1, "w": 24, "x": 0, "y": 35 },
+          "gridPos": { "h": 1, "w": 24, "x": 0, "y": 43 },
           "collapsed": false
         },
         {
           "title": "Kafka Ingress Lag (The Cause)",
           "type": "timeseries",
-          "gridPos": { "h": 8, "w": 24, "x": 0, "y": 36 },
+          "gridPos": { "h": 8, "w": 24, "x": 0, "y": 44 },
           "targets": [
             { "expr": "sum(kafka_consumergroup_lag{consumergroup='go-mailer-group', topic='profile-updates'}) or vector(0)", "legendFormat": "Messages Waiting in Kafka" }
           ],
@@ -114,7 +122,7 @@ data:
         {
           "title": "System Response: Active Replicas",
           "type": "timeseries",
-          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 44 },
+          "gridPos": { "h": 8, "w": 8, "x": 0, "y": 52 },
           "targets": [
             { "expr": "kube_deployment_status_replicas_available{deployment='go-mailer-service'}", "legendFormat": "Current Running Pods" },
             { "expr": "kube_horizontalpodautoscaler_status_desired_replicas{horizontalpodautoscaler='keda-hpa-mailer-kafka-scaler'}", "legendFormat": "HPA Desired Level" },
@@ -124,28 +132,19 @@ data:
         {
           "title": "CPU Usage vs Limit (%)",
           "type": "gauge",
-          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 44 },
+          "gridPos": { "h": 8, "w": 8, "x": 8, "y": 52 },
           "targets": [
             { "expr": "sum(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_irate{namespace='banking-apps', pod=~'go-mailer-service-.*'}) / sum(kube_pod_container_resource_limits{resource='cpu', namespace='banking-apps', pod=~'go-mailer-service-.*'}) * 100", "legendFormat": "CPU Load" }
           ],
           "fieldConfig": { "defaults": { "min": 0, "max": 100, "unit": "percent", "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "red", "value": 80 } ] } } }
         },
         {
-          "title": "Java Spring Boot Service: Api Requests",
+          "title": "Go Mailer Service: Mails Sent",
           "type": "stat",
-          "gridPos": { "h": 8, "w": 12, "x": 0, "y": 44 },
+          "gridPos": { "h": 8, "w": 8, "x": 16, "y": 52 },
           "targets": [
-            { "expr": "sum(max_over_time(inquiry_requests_total[15m]))", "legendFormat": "Api Requests" }
-          ]
-        },
-        {
-          "title": "Go Profile Service: Mails Sent",
-          "type": "stat",
-          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 44 },
-          "targets": [
-            { "expr": "sum(max_over_time(go_emails_processed_total{status=\"success\"}[15m]))", "legendFormat": "Mails Sent" }
+            { "expr": "sum(increase(go_emails_processed_total{status=\"success\"}[15m]))", "legendFormat": "Mails Sent" }
           ]
         }
-
       ]
     }
