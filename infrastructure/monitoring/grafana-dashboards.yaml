@@ -27,6 +27,32 @@ data:
           "fieldConfig": { "defaults": { "min": 0, "max": 100, "unit": "percent", "thresholds": { "mode": "absolute", "steps": [ { "color": "green", "value": null }, { "color": "red", "value": 80 } ] } } }
         },
         {
+          "title": "Cluster Infrastructure: Active Nodes",
+          "type": "timeseries",
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 60 },
+          "targets": [
+            { 
+              "expr": "sum(kube_node_status_condition{condition='Ready', status='true'})", 
+              "legendFormat": "Ready Nodes" 
+            },
+            { 
+              "expr": "count(kube_node_info)", 
+              "legendFormat": "Total Nodes" 
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "min": 0,
+              "decimals": 0,
+              "custom": {
+                "drawStyle": "line",
+                "lineInterpolation": "stepAfter",
+                "fillOpacity": 10
+              }
+            }
+          }
+        },
+        {
           "type": "row",
           "title": "System Metrics: Ibmi Interface Service (Legacy Backend)",
           "gridPos": { "h": 1, "w": 24, "x": 0, "y": 9 },
