@@ -185,6 +185,8 @@ async def kafka_consumer_loop():
                     
                     await producer.send_and_wait(PRODUCE_TOPIC, fallback_message.encode('utf-8'))
                     print(f" [KAFKA OUT] Published Fallback: {fallback_log}")
+            except Exception as e:
+                print(f" [FATAL ERROR] Failed to process incoming message completely: {e}")
     except asyncio.CancelledError:
         print("[SHUTDOWN] Received stop signal. Stopping Kafka consumer loop...")
     except Exception as e:
