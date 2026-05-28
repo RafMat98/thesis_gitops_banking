@@ -29,7 +29,7 @@ data:
         {
           "title": "Cluster Infrastructure: Active Nodes",
           "type": "timeseries",
-          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 60 },
+          "gridPos": { "h": 8, "w": 12, "x": 12, "y": 1 },
           "targets": [
             { 
               "expr": "sum(kube_node_status_condition{condition='Ready', status='true'})", 
