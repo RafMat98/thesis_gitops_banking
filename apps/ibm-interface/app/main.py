@@ -151,22 +151,40 @@ async def kafka_consumer_loop():
                 print(f" [KAFKA IN] Received: {account_id}")
                 
                 loop = asyncio.get_running_loop()
-                cobol_result = await loop.run_in_executor(None, run_cobol_ssh, account_id)
-
-                balance = cobol_result.get("bal", "0000000000")
-                final_message = f"{account_id}+{balance}"
+                cobol_result = None
+                success = False
                 
-                final_log = {
-                    "account_id": account_id,
-                    "balance": "********",
-                    "status": "PROCESSED"
-                }
-                await producer.send_and_wait(PRODUCE_TOPIC, final_message.encode('utf-8'))
-                print(f" [KAFKA OUT] Published: {final_log}")
-
-            except Exception as e:
-                print(f" [ERROR] Processing message failed: {e}")
-                print(f" [DEBUG] Final log for failed message: {final_log}")
+                # --- RETRY (Max 3 ATTEMPTS) ---
+                MAX_RETRIES = 3
+                for attempt in range(1, MAX_RETRIES + 1):
+                    try:
+                        #  COBOL
+                        cobol_result = await loop.run_in_executor(None, run_cobol_ssh, account_id)
+                        success = True
+                        break 
+                        
+                    except Exception as e:
+                        print(f" [WARNING] Attempt {attempt}/{MAX_RETRIES} failed for {account_id}. Reason: {e}")
+                        if attempt < MAX_RETRIES:
+                            print(f" [RETRY] Waiting 1 seconds before retrying...")
+                            await asyncio.sleep(1) 
+                
+                
+                if success:
+                    balance = cobol_result.get("bal", "0000000000")
+                    final_message = f"{account_id}+{balance}"
+                    final_log = {"account_id": account_id, "balance": "********", "status": "PROCESSED"}
+                    
+                    await producer.send_and_wait(PRODUCE_TOPIC, final_message.encode('utf-8'))
+                    print(f" [KAFKA OUT] Published: {final_log}")
+                    
+                else:
+                    print(f" [ERROR] All {MAX_RETRIES} attempts failed for {account_id}. Sending Fallback.")
+                    fallback_message = f"{account_id}+0000000000"
+                    fallback_log = {"account_id": account_id, "balance": "0.00", "status": "SYSTEM_ERROR"}
+                    
+                    await producer.send_and_wait(PRODUCE_TOPIC, fallback_message.encode('utf-8'))
+                    print(f" [KAFKA OUT] Published Fallback: {fallback_log}")
     except asyncio.CancelledError:
         print("[SHUTDOWN] Received stop signal. Stopping Kafka consumer loop...")
     except Exception as e:
