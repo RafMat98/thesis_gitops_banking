@@ -125,7 +125,8 @@ async def kafka_consumer_loop():
         ssl_context=ssl_context,
         auto_offset_reset='earliest',
         max_poll_records=5, # We fetch in small batches to avoid timeout
-        max_poll_interval_ms=300000
+        max_poll_interval_ms=300000,
+        enable_auto_commit=False,
     )
     producer = AIOKafkaProducer(
         bootstrap_servers=KAFKA_BROKER,
@@ -184,6 +185,7 @@ async def kafka_consumer_loop():
                     fallback_log = {"account_id": account_id, "balance": "0.00", "status": "SYSTEM_ERROR"}
                     
                     await producer.send_and_wait(PRODUCE_TOPIC, fallback_message.encode('utf-8'))
+                    await consumer.commit()
                     print(f" [KAFKA OUT] Published Fallback: {fallback_log}")
             except Exception as e:
                 print(f" [FATAL ERROR] Failed to process incoming message completely: {e}")
@@ -202,7 +204,7 @@ async def kafka_consumer_loop():
 async def lifespan(app: FastAPI):
     global ssh_client, ssh_shell
     try:
-        ssh_client, ssh_shell = create_ssh_shell()  # ← Fix
+        ssh_client, ssh_shell = create_ssh_shell()  
     except Exception as e:
         print(f" [FATAL] Failed to initialize SSH Shell on startup: {e}")
     task = asyncio.create_task(kafka_consumer_loop())
