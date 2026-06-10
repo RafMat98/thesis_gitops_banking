@@ -3,11 +3,11 @@ kind: Job
 metadata:
   name: redis-bulk-seeder
   namespace: infra-system
-  annotations:
-    argocd.argoproj.io/hook: PostSync
-    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
 spec:
   template:
+    metadata:
+      labels:
+        app: redis-bulk-seeder
     spec:
       containers:
         - name: redis-bulk-seeder
