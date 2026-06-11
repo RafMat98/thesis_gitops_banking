@@ -4,6 +4,7 @@ metadata:
   name: banking-api-ingress
   namespace: banking-apps
   annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /api/v1/balance/$1
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
