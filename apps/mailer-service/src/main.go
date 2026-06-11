@@ -157,6 +157,8 @@ func main() {
 		"ssl.certificate.location":            "/app/certs/user.crt",
 		"ssl.key.location":                    "/app/certs/user.key",
 		"enable.ssl.certificate.verification": false,
+		"session.timeout.ms":                  45000,
+		"max.poll.interval.ms":                300000,
 	})
 	if err != nil {
 		fmt.Printf(" Failed to create Kafka consumer: %v\n", err)
@@ -188,6 +190,7 @@ func main() {
 				var data EnrichedMessage
 				if err := json.Unmarshal(e.Value, &data); err != nil {
 					fmt.Printf(" Failed to deserialize message: %v\n", err)
+					consumer.CommitMessage(e)
 					continue
 				}
 
