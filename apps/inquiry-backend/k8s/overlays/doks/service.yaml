@@ -5,12 +5,8 @@ metadata:
   namespace: banking-apps
   labels:
     app: inquiry-backend
-  annotations:
-    service.beta.kubernetes.io/do-loadbalancer-name: "inquiry-backend-lb"
-    service.beta.kubernetes.io/do-loadbalancer-protocol: "http"
-    service.beta.kubernetes.io/do-loadbalancer-healthcheck-check-interval-seconds: "10"
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
     app: inquiry-backend
   ports:
