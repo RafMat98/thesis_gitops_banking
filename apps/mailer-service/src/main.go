@@ -71,6 +71,7 @@ func sendEmail(msg EnrichedMessage, smtpHost string, smtpPort string, smtpUser s
 
 	// Step 2: Upgrade the connection to TLS via STARTTLS.
 	// InsecureSkipVerify is acceptable for thesis/dev environments with self-signed certificates.
+
 	tlsConfig := &tls.Config{
 		InsecureSkipVerify: true,
 		ServerName:         smtpHost,
