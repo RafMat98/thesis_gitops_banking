@@ -213,7 +213,6 @@ func main() {
 			}
 		}
 	}()
-
 	// --- Block until shutdown signal is received ---
 	<-sigchan
 	fmt.Println("\n  Shutdown signal received (SIGTERM). Closing consumer...")
