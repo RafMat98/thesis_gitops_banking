@@ -4,8 +4,6 @@ pipeline {
     environment {
         
         DOCKER_HOST       = 'unix:///var/run/docker.sock'
-        DOCKER_TLS_VERIFY = ''
-        DOCKER_CERT_PATH  = ''
     }
     
     triggers {
@@ -22,25 +20,18 @@ pipeline {
                     echo "DEBUG - Last Commit Message: ${lastCommitMsg}"
                     echo "DEBUG - Last Commit Author: ${lastCommitAuthor}"
 
-                    if (lastCommitAuthor == 'Jenkins CI' || lastCommitMsg.contains('[skip ci]')) {
-                        
-                        env.SKIP_DEPLOYMENT = 'true'
-                        echo "GitOps automated commit detected (Author: ${lastCommitAuthor}). Stopping the loop."
-                        
+                    def allChanges = currentBuild.changeSets*.items.flatten()
+                    def paths = allChanges.collectMany { it.affectedFiles*.path }
+                    
+                    echo "DEBUG - Files changed in accumulated changesets: ${paths}"
+                    
+                    if (paths.isEmpty()) {
+                        env.SKIP_DEPLOYMENT = 'false'
+                        echo "No changesets found (Manual Build). Proceeding with deployment."
                     } else {
-                        def allChanges = currentBuild.changeSets*.items.flatten()
-                        def paths = allChanges.collectMany { it.affectedFiles*.path }
-                        
-                        echo "DEBUG - Files changed in accumulated changesets: ${paths}"
-                        
-                        if (paths.isEmpty()) {
-                            env.SKIP_DEPLOYMENT = 'false'
-                            echo "No changesets found (Manual Build). Proceeding with deployment."
-                        } else {
-                            def appChanged = paths.any { it.startsWith("${GITHUB_APP_PATH}/") }
-                            env.SKIP_DEPLOYMENT = appChanged ? 'false' : 'true'
-                            echo "App code changes detected: ${appChanged}"
-                        }
+                        def appChanged = paths.any { it.startsWith("${GITHUB_APP_PATH}/") }
+                        env.SKIP_DEPLOYMENT = appChanged ? 'false' : 'true'
+                        echo "App code changes detected: ${appChanged}"
                     }
                     
                     echo "Skip deployment status set to: ${env.SKIP_DEPLOYMENT}"
@@ -150,36 +141,46 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: "${GITHUB_CRED_ID}", usernameVariable: 'GH_USER', passwordVariable: 'GH_TOKEN')]) {
                     script {
                         def yamlPath = "${KUBERNETES_PATH}" // Path for deployment.yaml
-                        
-
+ 
                         sh 'git config user.name "Jenkins_CI"'
                         sh 'git config user.email "jenkins@ci.com"'
-                        
-                        echo "Fetching latest changes from GitHub to prevent race conditions..."
-                        sh "git pull --rebase https://${GH_USER}:${GH_TOKEN}@github.com/RafMat98/thesis_gitops_banking.git ${GITHUB_BRANCH}"
-                        
+ 
+                        // Modify the image tag (no credentials involved here).
                         echo "Modifying image tag in ${yamlPath} to ${env.IMAGE_TAG}..."
                         sh "sed -i 's|image: ${DOCKER_HUB_REPO}:.*|image: ${DOCKER_HUB_REPO}:${env.IMAGE_TAG}|g' ${yamlPath}"
-                        
-                      
-                        def gitStatus = sh(script: "git status --porcelain", returnStdout: true).trim()
-                        if (gitStatus != "") {
-                            echo "Pushing updated manifest to GitHub..."
-                            sh "git add ${yamlPath}"
-                            sh "git commit -m 'chore(gitops): auto-release ${env.IMAGE_TAG} [skip ci]'"
-                            
-  
-                            sh "git push https://${GH_USER}:${GH_TOKEN}@github.com/RafMat98/thesis_gitops_banking.git HEAD:${GITHUB_BRANCH}"
-                            
-                            echo "✅ GitHub Manifest updated! ArgoCD will catch it shortly."
-                        } else {
-                            echo "No changes detected in YAML. Skipping push."
+ 
+                        // Pass non-sensitive Groovy values into the shell as environment
+                        // variables, then let the SHELL expand the credentials ($GH_USER,
+                        // $GH_TOKEN). Using single quotes means Groovy never interpolates
+                        // the secret into the command string.
+                        withEnv([
+                            "REPO_PATH=RafMat98/thesis_gitops_banking.git",
+                            "TARGET_BRANCH=${GITHUB_BRANCH}",
+                            "YAML_PATH=${yamlPath}",
+                            "RELEASE_TAG=${env.IMAGE_TAG}"
+                        ]) {
+                            echo "Fetching latest changes from GitHub to prevent race conditions..."
+                            sh 'git pull --rebase "https://${GH_USER}:${GH_TOKEN}@github.com/${REPO_PATH}" "${TARGET_BRANCH}"'
+ 
+                            def gitStatus = sh(script: "git status --porcelain", returnStdout: true).trim()
+                            if (gitStatus != "") {
+                                echo "Pushing updated manifest to GitHub..."
+                                sh '''
+                                    git add "${YAML_PATH}"
+                                    git commit -m "chore(gitops): auto-release ${RELEASE_TAG} [skip ci]"
+                                    git push "https://${GH_USER}:${GH_TOKEN}@github.com/${REPO_PATH}" "HEAD:${TARGET_BRANCH}"
+                                '''
+                                echo "✅ GitHub Manifest updated! ArgoCD will catch it shortly."
+                            } else {
+                                echo "No changes detected in YAML. Skipping push."
+                            }
                         }
                     }
                 }
             }
         }       
     }
+}
 }
 
     post {
