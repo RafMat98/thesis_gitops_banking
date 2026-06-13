@@ -147,7 +147,6 @@ pipeline {
  
                         // Modify the image tag (no credentials involved here).
                         echo "Modifying image tag in ${yamlPath} to ${env.IMAGE_TAG}..."
-                        sh "sed -i 's|image: ${DOCKER_HUB_REPO}:.*|image: ${DOCKER_HUB_REPO}:${env.IMAGE_TAG}|g' ${yamlPath}"
  
                         // Pass non-sensitive Groovy values into the shell as environment
                         // variables, then let the SHELL expand the credentials ($GH_USER,
@@ -161,6 +160,7 @@ pipeline {
                         ]) {
                             echo "Fetching latest changes from GitHub to prevent race conditions..."
                             sh 'git pull --rebase "https://${GH_USER}:${GH_TOKEN}@github.com/${REPO_PATH}" "${TARGET_BRANCH}"'
+                            sh "sed -i 's|image: ${DOCKER_HUB_REPO}:.*|image: ${DOCKER_HUB_REPO}:${env.IMAGE_TAG}|g' ${yamlPath}"
  
                             def gitStatus = sh(script: "git status --porcelain", returnStdout: true).trim()
                             if (gitStatus != "") {

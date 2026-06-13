@@ -207,7 +207,6 @@ func main() {
 
 					consumer.CommitMessage(e)
 				}
-
 			case kafka.Error:
 				fmt.Printf("  Kafka error: %v\n", e)
 			}
