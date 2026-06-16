@@ -10,7 +10,7 @@ spec:
   source:
     repoURL: "https://github.com/RafMat98/thesis_gitops_banking.git"
     targetRevision: development_doks
-    path: apps/ibm-interface/k8s/overlays/keda
+    path: apps/ibm-interface/k8s/overlays/hpa
   destination:
     server: "https://kubernetes.default.svc"
     namespace: banking-apps
