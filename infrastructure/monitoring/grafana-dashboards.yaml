@@ -63,7 +63,7 @@ data:
           "type": "timeseries",
           "gridPos": { "h": 8, "w": 24, "x": 0, "y": 10 },
           "targets": [
-            { "expr": "sum(kafka_consumergroup_lag{consumergroup='cobol-backend-group', topic='balance-requests'}) or vector(0)", "legendFormat": "Messages Waiting in Kafka" }
+            { "expr": "clamp_min(sum(kafka_consumergroup_lag{consumergroup='cobol-backend-group', topic='balance-requests'},0) or vector(0)", "legendFormat": "Messages Waiting in Kafka" }
           ],
           "fieldConfig": { "defaults": { "color": { "mode": "palette-classic" }, "custom": { "drawStyle": "area", "fillOpacity": 20 } } }
         },
@@ -98,7 +98,7 @@ data:
           "type": "timeseries",
           "gridPos": { "h": 8, "w": 24, "x": 0, "y": 27 },
           "targets": [
-            { "expr": "sum(kafka_consumergroup_lag{consumergroup='go-microservice-group', topic='balance-responses'}) or vector(0)", "legendFormat": "Messages Waiting in Kafka" }
+            { "expr": "clamp_min(sum(kafka_consumergroup_lag{consumergroup='go-microservice-group', topic='balance-responses'},0) or vector(0)", "legendFormat": "Messages Waiting in Kafka" }
           ],
           "fieldConfig": { "defaults": { "color": { "mode": "palette-classic" }, "custom": { "drawStyle": "area", "fillOpacity": 20 } } }
         },
@@ -132,7 +132,7 @@ data:
           "type": "timeseries",
           "gridPos": { "h": 8, "w": 24, "x": 0, "y": 44 },
           "targets": [
-            { "expr": "sum(kafka_consumergroup_lag{consumergroup='go-mailer-group', topic='profile-updates'}) or vector(0)", "legendFormat": "Messages Waiting in Kafka" }
+            { "expr": "clamp_min(sum(kafka_consumergroup_lag{consumergroup='go-mailer-group', topic='profile-updates'},0) or vector(0)", "legendFormat": "Messages Waiting in Kafka" }
           ],
           "fieldConfig": { "defaults": { "color": { "mode": "palette-classic" }, "custom": { "drawStyle": "area", "fillOpacity": 20 } } }
         },
