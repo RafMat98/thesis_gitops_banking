@@ -4,6 +4,7 @@ metadata:
   name: grafana-ingress
   namespace: monitoring-system
   annotations:
+    argocd.argoproj.io/sync-wave: "1"
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
   ingressClassName: nginx
