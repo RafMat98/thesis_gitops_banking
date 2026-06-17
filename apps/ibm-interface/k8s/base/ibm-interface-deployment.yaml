@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: ibm-interface
-          image: rmat98/ibmi-api:v1.0.7
+          image: rmat98/ibmi-api:v1.0.8
           imagePullPolicy: Always
           env:
             - name: KAFKA_BROKER
