@@ -177,6 +177,7 @@ async def kafka_consumer_loop():
                     final_log = {"account_id": account_id, "balance": "********", "status": "PROCESSED"}
                     
                     await producer.send_and_wait(PRODUCE_TOPIC, final_message.encode('utf-8'))
+                    await consumer.commit()
                     print(f" [KAFKA OUT] Published: {final_log}")
                     
                 else:
