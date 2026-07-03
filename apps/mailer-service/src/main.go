@@ -30,7 +30,7 @@ var (
 )
 
 func init() {
-	// --- 2. REGISTRATION FOR METRIC PROMETHEUS ---
+	// --- 2. REGISTRATION FOR METRIC PROMETHEUS --
 	prometheus.MustRegister(emailsSentTotal)
 }
 
