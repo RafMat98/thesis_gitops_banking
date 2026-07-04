@@ -48,7 +48,7 @@ type EnrichedMessage struct {
 // a balance notification email to the customer.
 func sendEmail(msg EnrichedMessage, smtpHost string, smtpPort string, smtpUser string, smtpPass string) error {
 
-	// Build email headers (From, To, Subject, MIME)
+	// Build email headers (From, To, Subject, MIME)-
 	headers := fmt.Sprintf("From: GBank Notifications <noreply@banking.local>\r\n")
 	headers += fmt.Sprintf("To: %s <%s>\r\n", msg.CustomerName, msg.Email)
 	headers += fmt.Sprintf("Subject: Balance Inquiry - %s\r\n", msg.AccountID)
